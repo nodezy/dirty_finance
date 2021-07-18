@@ -33,7 +33,30 @@ contract Authorizable is Ownable {
 
 }
 
-contract DirtyNFT is Ownable, Authorizable, ERC721, ReentrancyGuard  {
+// Allows authorized users to add creators/infuencer addresses to the whitelist
+contract Whitelisted is Ownable, Authorizable {
+
+    mapping(address => bool) public whitelisted;
+
+    modifier onlyWhitelisted() {
+        require(whitelisted[_msgSender()] || authorized[_msgSender()]);
+        _;
+    }
+
+    function addWhitelisted(address _toAdd) onlyAuthorized public {
+        require(_toAdd != address(0));
+        whitelisted[_toAdd] = true;
+    }
+
+    function removeWhitelisted(address _toRemove) onlyAuthorized public {
+        require(_toRemove != address(0));
+        require(_toRemove != address(_msgSender()));
+        whitelisted[_toRemove] = false;
+    }
+
+}
+
+contract DirtyNFT is Ownable, Authorizable, Whitelisted, ERC721, ReentrancyGuard  {
     using Counters for Counters.Counter;
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
@@ -120,10 +143,14 @@ contract DirtyNFT is Ownable, Authorizable, ERC721, ReentrancyGuard  {
     //here is where we populate the NFT infuencer/artist info so they can receive proceeds from purchases with $dirty token
     //and split that with the staking pool based on a split % for each NFT (can be all the same by invoking ALL or can be 
     //different base on each NFT [the _mintInital bool can mint the first NFT for the creator's private collection])
-    function setCreatorInfo(address _creator, string memory _creatorName, string memory _nftName, string memory _URI, uint256 _price, uint256 _splitPercent, uint256 _mintLimit, bool _redeemable, bool _mintInitial) public onlyAuthorized returns (uint256) {
+    function setCreatorInfo(address _creator, string memory _creatorName, string memory _nftName, string memory _URI, uint256 _price, uint256 _splitPercent, uint256 _mintLimit, bool _redeemable, bool _mintInitial) public onlyWhitelisted returns (uint256) {
 
+        require(_creator == address(_msgSender()) || authorized[_msgSender()], "Sender is not creator or authorized"); 
+        require(bytes(_creatorName).length > 0, "Creator name string must not be empty");
+        require(bytes(_nftName).length > 0, "NFT name string must not be empty");
         require(bytes(_URI).length > 0, "URI string must not be empty");
         require(_price > 0, "Price must be greater than zero");
+        require(_mintLimit > 0, "Mint limit must be greater than zero");
         require(_splitPercent >= 0 && _splitPercent <= 100, "Split is not between 0 and 100");
         require(!uriExists[_URI], "An NFT with this URI already exists");
 
@@ -170,11 +197,11 @@ contract DirtyNFT is Ownable, Authorizable, ERC721, ReentrancyGuard  {
     }
 
     // If the creator didn't mint their initial NFT, this will allow it
-    function remintInitial(uint256 _nftid) external onlyAuthorized {
+    function remintInitial(uint256 _nftid) external onlyWhitelisted {
 
        CreatorInfo storage creator = creatorInfo[_nftid];
 
-       require(creator.creatorAddress == address(_msgSender()) || owner() == address(_msgSender()), "Sender is not owner or creator"); 
+       require(creator.creatorAddress == address(_msgSender()) || authorized[_msgSender()], "Sender is not creator or authorized"); 
        require(creator.creatorAddress != address(0), "Creator is the zero address");
        require(!mintInitial[_nftid], "This NFT was already minted when added to the system");
 
@@ -188,34 +215,34 @@ contract DirtyNFT is Ownable, Authorizable, ERC721, ReentrancyGuard  {
 
     }
 
-    // Get all NFT added by a certain address
-    function getAllNFTbyAddress(address _address) public view returns (uint256[] memory ids, string[] memory name) {
+    // Get all NFT IDs added by a certain address 
+    function getAllNFTIDbyAddress(address _address) public view returns (uint256[] memory) {
         uint256 totalNFT = _NFTIds.current();
-        ids = new uint256[](totalNFT);
-        name = new string[](totalNFT);
+        uint256[] memory ids = new uint256[](totalNFT);
         uint256 count = 0;
 
         for (uint256 x = 1; x <= totalNFT; ++x) {
 
             CreatorInfo storage creator = creatorInfo[x];
+            count = count.add(1);
 
             if (creator.creatorAddress == address(_address)) {
-                count = count.add(1);
+                
                 ids[count] = x;
-                name[count] = creator.nftName;
             }
 
         }
 
-        return (ids,name);
+        return (ids);
     }
 
+    
     // Set creator address to new, or set to 0 address to clear out the NFT completely
     function setCreatorAddress(uint256 _nftid, address _address) public onlyAuthorized {
 
         CreatorInfo storage creator = creatorInfo[_nftid];
 
-        require(creator.creatorAddress == address(_msgSender()) || owner() == address(_msgSender()), "Sender is not owner or creator"); 
+        require(creator.creatorAddress == address(_msgSender()) || authorized[_msgSender()], "Sender is not creator or authorized");  
 
         if (_address == address(0)) {
 
@@ -258,7 +285,8 @@ contract DirtyNFT is Ownable, Authorizable, ERC721, ReentrancyGuard  {
 
         CreatorInfo storage creator = creatorInfo[_nftid];
 
-        require(creator.creatorAddress == address(_msgSender()) || owner() == address(_msgSender()), "Sender is not owner or creator");        
+        require(creator.creatorAddress == address(_msgSender()) || authorized[_msgSender()], "Sender is not creator or authorized");   
+        require(bytes(_name).length > 0, "Creator name string must not be empty");    
 
         creator.creatorName = _name;
     }
@@ -268,7 +296,8 @@ contract DirtyNFT is Ownable, Authorizable, ERC721, ReentrancyGuard  {
 
         CreatorInfo storage creator = creatorInfo[_nftid];
 
-        require(creator.creatorAddress == address(_msgSender()) || owner() == address(_msgSender()), "Sender is not owner or creator");        
+        require(creator.creatorAddress == address(_msgSender()) || authorized[_msgSender()], "Sender is not creator or authorized");   
+        require(bytes(_name).length > 0, "NFT name string must not be empty");     
 
         creator.nftName = _name;
     }
@@ -278,7 +307,9 @@ contract DirtyNFT is Ownable, Authorizable, ERC721, ReentrancyGuard  {
 
         CreatorInfo storage creator = creatorInfo[_nftid];
 
-        require(creator.creatorAddress == address(_msgSender()) || owner() == address(_msgSender()), "Sender is not owner or creator");        
+        require(creator.creatorAddress == address(_msgSender()) || authorized[_msgSender()], "Sender is not creator or authorized");  
+        require(bytes(_uri).length > 0, "URI string must not be empty");     
+        require(!uriExists[_uri], "An NFT with this URI already exists"); 
 
         creator.uri = _uri;
     }
@@ -288,7 +319,8 @@ contract DirtyNFT is Ownable, Authorizable, ERC721, ReentrancyGuard  {
 
         CreatorInfo storage creator = creatorInfo[_nftid];
 
-        require(creator.creatorAddress == address(_msgSender()) || owner() == address(_msgSender()), "Sender is not owner or creator"); 
+        require(creator.creatorAddress == address(_msgSender()) || authorized[_msgSender()], "Sender is not creator or authorized");  
+        require(_cost > 0, "Price must be greater than zero");
 
         creator.price = _cost;
     }
@@ -304,7 +336,8 @@ contract DirtyNFT is Ownable, Authorizable, ERC721, ReentrancyGuard  {
 
         CreatorInfo storage creator = creatorInfo[_nftid];
 
-        require(creator.creatorAddress == address(_msgSender()) || owner() == address(_msgSender()), "Sender is not owner or creator"); 
+        require(creator.creatorAddress == address(_msgSender()) || authorized[_msgSender()], "Sender is not creator or authorized");  
+        require(_split >= 0 && _split <= 100, "Split is not between 0 and 100");
 
         creator.creatorSplit = _split;
     }
@@ -319,7 +352,8 @@ contract DirtyNFT is Ownable, Authorizable, ERC721, ReentrancyGuard  {
 
         CreatorInfo storage creator = creatorInfo[_nftid];
 
-        require(creator.creatorAddress == address(_msgSender()) || owner() == address(_msgSender()), "Sender is not owner or creator"); 
+        require(creator.creatorAddress == address(_msgSender()) || authorized[_msgSender()], "Sender is not creator or authorized"); 
+        require(_limit > 0, "Mint limit must be greater than zero");
 
         creator.mintLimit = _limit;
     }
@@ -334,7 +368,7 @@ contract DirtyNFT is Ownable, Authorizable, ERC721, ReentrancyGuard  {
 
         CreatorInfo storage creator = creatorInfo[_nftid];
 
-        require(creator.creatorAddress == address(_msgSender()) || owner() == address(_msgSender()), "Sender is not owner or creator"); 
+        require(creator.creatorAddress == address(_msgSender()) || authorized[_msgSender()], "Sender is not creator or authorized"); 
 
         creator.redeemable = _redeemable;
     }
