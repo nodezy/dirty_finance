@@ -95,15 +95,22 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
     uint256 public unstakeTime = 60; // Time in seconds to wait for withdrawal.
     uint256 public poolReward = 10000000000000000000000; //starting basis for poolReward (default 10k).
     uint256 public conversionRate = 100000; //conversion rate of DIRTYCASH => $dirty (default 100k).
-    bool public enableRewardWithdraw = false;
+    bool public enableRewardWithdraw = false; //whether dirtycash is withdrawable from this contract (default false).
+    uint256 public minDirtyStake = 21000000000000000000000000; //min stake amount (default 21 million Dirty).
+    uint256 public maxDirtyStake = 2100000000000000000000000000; //max stake amount (default 2.1 billion Dirty).
+    uint256 public minLPStake = 1000000000000000000000; //min lp stake amount (default 1000 LP tokens).
+    uint256 public maxLPStake = 10000000000000000000000; //max lp stake amount (default 10,000 LP tokens).
 
     mapping(address => bool) public addedLpTokens; // Used for preventing LP tokens from being added twice in add().
     mapping(uint256 => mapping(address => uint256)) public unstakeTimer; // Used to track time since unstake requested.
     mapping(address => uint256) private userBalance; // Balance of DirtyCash for each user that survives staking/unstaking/redeeming.
     mapping(address => bool) private promoWallet; // Whether the wallet has received promotional DIRTYCASH.
-    mapping(uint256 => uint256) public totalEarned; // Total amount of $dirty token spent on a particular NFT.
+    mapping(uint256 => uint256) public totalEarnedCreator; // Total amount of $dirty token spent to creator on a particular NFT.
+    mapping(uint256 => uint256) public totalEarnedPool; // Total amount of $dirty token spent to pool on a particular NFT.
+    mapping(uint256 => uint256) public totalEarnedBurn; // Total amount of $dirty token spent to burn on a particular NFT.
 
     address public NFTAddress; //NFT contract address
+    address public DirtyCashAddress; //DIRTYCASH contract address
 
     event Unstake(address indexed user, uint256 indexed pid);
     event Deposit(address indexed user, uint256 indexed pid, uint256 amount);
@@ -116,9 +123,10 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
         uint256 _startBlock
     ) {
         require(address(_dirty) != address(0), "DIRTYCASH address is invalid");
-        require(_startBlock >= block.number, "startBlock is before current block");
+        //require(_startBlock >= block.number, "startBlock is before current block");
 
         dirtycash = _dirty;
+        DirtyCashAddress = address(_dirty);
         startBlock = _startBlock;
     }
 
@@ -262,9 +270,11 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
                 userBalance[_msgSender()] = userBalance[_msgSender()].add(tempRewards);
             }
             
-            if (_pid == 1) { //$Dirty tokens
-                require(_amount >= 21000000000000000000000000, "You cannot stake less than 21 Million $Dirty");
-                require(_amount.add(user.amount) <= 2100000000000000000000000000, "You cannot stake more than 2.1 Billion $Dirty");
+            if (_pid != 0) { //$Dirty tokens
+                if(user.amount == 0) { //we only want the minimum to apply on first deposit, not subsequent ones
+                require(_amount >= minDirtyStake, "You cannot stake less than the minimum required $Dirty");
+                }
+                require(_amount.add(user.amount) <= maxDirtyStake, "You cannot stake more than the maximum $Dirty");
                 pool.runningTotal = pool.runningTotal.add(_amount);
                 user.amount = user.amount.add(_amount);  
                 pool.lpToken.safeTransferFrom(address(_msgSender()), address(this), _amount);
@@ -272,8 +282,10 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
 
                 
             } else { //LP tokens
-                require(_amount >= 1000000000000000000000, "You cannot stake less than 1k LP Tokens");
-                require(_amount.add(user.amount) <= 10000000000000000000000, "You cannot stake more than 10k LP Tokens");
+                if(user.amount == 0) { //we only want the minimum to apply on first deposit, not subsequent ones
+                require(_amount >= minLPStake, "You cannot stake less than the minimum LP Tokens");
+                }
+                require(_amount.add(user.amount) <= maxLPStake, "You cannot stake more than the maximum LP Tokens");
                 pool.runningTotal = pool.runningTotal.add(_amount);
                 user.amount = user.amount.add(_amount);
                 pool.lpToken.safeTransferFrom(address(_msgSender()), address(this), _amount);
@@ -283,7 +295,7 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
         unstakeTimer[_pid][_msgSender()] = 9999999999;
 
         if (!promoWallet[_msgSender()]) {
-            userBalance[_msgSender()] = 200000000000000000000;
+            userBalance[_msgSender()] = 200000000000000000000; //give 200 promo DIRTYCASH
             promoWallet[_msgSender()] = true;
         }
         
@@ -331,7 +343,7 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
 
         if (_amount > 0) {
 
-            if (_pid == 1) { //$Dirty tokens
+            if (_pid != 0) { //$Dirty tokens
                 
                 uint256 lpSupply = pool.lpToken.balanceOf(address(this)); //get total amount of tokens
                 uint256 totalRewards = lpSupply.sub(pool.runningTotal); //get difference between contract address amount and ledger amount
@@ -504,8 +516,13 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
     }
 
     //whether to allow the DirtyCash token to actually be withdrawn, of just leave it virtual (default)
-    function enableRewardWithdrawals(bool _status) external onlyAuthorized {
+    function enableRewardWithdrawals(bool _status) public onlyAuthorized {
         enableRewardWithdraw = _status;
+    }
+
+    //view state of reward withdrawals (true/false)
+    function rewardWithdrawalStatus() external view returns (bool) {
+        return enableRewardWithdraw;
     }
 
     //withdraw DirtyCash
@@ -513,7 +530,7 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
 
         require(enableRewardWithdraw, "DIRTYCASH withdrawals are not enabled");
 
-        IERC20 rewardtoken = IERC20(0xB02658F05315A7bE78486A53ca618c1bBBFeC61a); //DIRTYCASH
+        IERC20 rewardtoken = IERC20(DirtyCashAddress); //DIRTYCASH
 
         redeemTotalRewards(_msgSender());
 
@@ -528,8 +545,13 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
     }
 
     // Set NFT contract address
-     function setNFTAddress(address _address) public onlyAuthorized {
+     function setNFTAddress(address _address) external onlyAuthorized {
         NFTAddress = _address;
+    }
+
+    // Set DIRTYCASH contract address
+     function setDirtyCashAddress(address _address) external onlyAuthorized {
+        DirtyCashAddress = _address;
     }
 
     //redeem the NFT with DIRTYCASH only
@@ -599,11 +621,22 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
 
             if (creatorShare > 0) {
                 IERC20(dirtytoken).safeTransfer(address(creatorAddress), creatorShare);
-                totalEarned[_nftid] = totalEarned[_nftid].add(creatorShare);
+
+                if (creatorAddress == address(0x000000000000000000000000000000000000dEaD)) {
+                    totalEarnedBurn[_nftid] = totalEarnedBurn[_nftid].add(creatorShare);
+                } else {
+                    totalEarnedCreator[_nftid] = totalEarnedCreator[_nftid].add(creatorShare);
+                }
+                
+            }
+
+            if (poolShare > 0) {
+                totalEarnedPool[_nftid] = totalEarnedPool[_nftid].add(poolShare);
             }
 
         } else {
             IERC20(dirtytoken).transferFrom(_msgSender(), address(this), price);
+            totalEarnedPool[_nftid] = totalEarnedPool[_nftid].add(price);
         }
 
         
@@ -654,6 +687,24 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
 
          }
 
+    }
+
+    function setDirtyStakingMinMax(uint256 _min, uint256 _max) external onlyAuthorized {
+
+        require(_min < _max, "The maximum staking amount is less than the minimum");
+        require(_min > 0, "The minimum amount cannot be zero");
+
+        minDirtyStake = _min;
+        maxDirtyStake = _max;
+    }
+
+    function setLPStakingMinMax(uint256 _min, uint256 _max) external onlyAuthorized {
+
+        require(_min < _max, "The maximum staking amount is less than the minimum");
+        require(_min > 0, "The minimum amount cannot be zero");
+
+        minLPStake = _min;
+        maxLPStake = _max;
     }
     
 }
