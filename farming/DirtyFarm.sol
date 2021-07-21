@@ -92,14 +92,16 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
     uint256 public blockRewardLastUpdateTime = block.timestamp; // The timestamp when the block dirtyPerBlock was last updated.
     uint256 public blocksPerDay = 5000; // The estimated number of mined blocks per day, lowered so rewards are halved to start.
     uint256 public blockRewardPercentage = 1; // The percentage used for dirtyPerBlock calculation.
-    uint256 public unstakeTime = 60; // Time in seconds to wait for withdrawal.
+    uint256 public unstakeTime = 60; // Time in seconds to wait for withdrawal default (86400).
     uint256 public poolReward = 10000000000000000000000; //starting basis for poolReward (default 10k).
     uint256 public conversionRate = 100000; //conversion rate of DIRTYCASH => $dirty (default 100k).
-    bool public enableRewardWithdraw = false; //whether dirtycash is withdrawable from this contract (default false).
+    bool public enableRewardWithdraw = false; //whether DIRTYCASH is withdrawable from this contract (default false).
     uint256 public minDirtyStake = 21000000000000000000000000; //min stake amount (default 21 million Dirty).
     uint256 public maxDirtyStake = 2100000000000000000000000000; //max stake amount (default 2.1 billion Dirty).
     uint256 public minLPStake = 1000000000000000000000; //min lp stake amount (default 1000 LP tokens).
     uint256 public maxLPStake = 10000000000000000000000; //max lp stake amount (default 10,000 LP tokens).
+    uint256 public promoAmount = 200000000000000000000; //amount of DIRTYCASH to give to new stakers (default 200 DIRTYCASH).
+    bool public promoActive = true; //whether the promotional amount of DIRTYCASH is given out to new stakers (default is True).
 
     mapping(address => bool) public addedLpTokens; // Used for preventing LP tokens from being added twice in add().
     mapping(uint256 => mapping(address => uint256)) public unstakeTimer; // Used to track time since unstake requested.
@@ -291,16 +293,18 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
                 pool.lpToken.safeTransferFrom(address(_msgSender()), address(this), _amount);
             }
             
-        }
-        unstakeTimer[_pid][_msgSender()] = 9999999999;
-
-        if (!promoWallet[_msgSender()]) {
-            userBalance[_msgSender()] = 200000000000000000000; //give 200 promo DIRTYCASH
-            promoWallet[_msgSender()] = true;
-        }
         
-        user.rewardDebt = user.amount.mul(pool.accDirtyPerShare).div(1e12);
-        emit Deposit(_msgSender(), _pid, _amount);
+            unstakeTimer[_pid][_msgSender()] = 9999999999;
+
+            if (!promoWallet[_msgSender()] && promoActive) {
+                userBalance[_msgSender()] = promoAmount; //give 200 promo DIRTYCASH
+                promoWallet[_msgSender()] = true;
+            }
+            
+            user.rewardDebt = user.amount.mul(pool.accDirtyPerShare).div(1e12);
+            emit Deposit(_msgSender(), _pid, _amount);
+
+        }
     }
 
     function setUnstakeTime(uint256 _time) external onlyAuthorized {
@@ -689,6 +693,7 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
 
     }
 
+    // Sets min/max staking amounts for Dirty token
     function setDirtyStakingMinMax(uint256 _min, uint256 _max) external onlyAuthorized {
 
         require(_min < _max, "The maximum staking amount is less than the minimum");
@@ -698,6 +703,7 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
         maxDirtyStake = _max;
     }
 
+    // Sets min/max amounts for LP staking
     function setLPStakingMinMax(uint256 _min, uint256 _max) external onlyAuthorized {
 
         require(_min < _max, "The maximum staking amount is less than the minimum");
@@ -705,6 +711,29 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
 
         minLPStake = _min;
         maxLPStake = _max;
+    }
+
+    // Lets user move their pending rewards to accrued/escrow balance
+    function moveRewardsToEscrow(address _address) external {
+
+        require(_address == _msgSender() || authorized[_msgSender()], "Sender is not wallet owner or authorized");
+
+        UserInfo storage user0 = userInfo[0][_msgSender()];
+        uint256 userAmount = user0.amount;
+
+        UserInfo storage user1 = userInfo[1][_msgSender()];
+        userAmount = userAmount.add(user1.amount);
+
+        if (userAmount == 0) {
+            return;
+        } else {
+            redeemTotalRewards(_msgSender());
+        }       
+    }
+
+    // Sets true/false for the DIRTYCASH promo for new stakers
+    function setPromoStatus(bool _status) external onlyAuthorized {
+        promoActive = _status;
     }
     
 }
