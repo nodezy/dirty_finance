@@ -861,23 +861,9 @@ function topFunction() {
 
 }
 
-function copydirty() {
-
-  console.log('dirty token copy icon clicked');
-
-  var value = document.getElementById("dirtytokencontract").innerText;
-
-  console.log(value);
-
-
-  navigator.clipboard.writeText(value).then(() => { alert('Copy successful'); }).catch((error) => { alert(`Copy failed! ${error}`); });
-  
-
-
-}
 
 function showcopy(event) {
-  
+
   $(event).closest('.newtooltip').find('.newtooltiptext').css('background-color','black');
   $(event).closest('.newtooltip').find('.newtooltiptext').text('Copy');
 
