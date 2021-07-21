@@ -27,6 +27,32 @@
     border: 1px solid rgba(255,255,255,1) !important;
   }
 
+  .newtooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.newtooltip .newtooltiptext {
+  visibility: hidden;
+  width: 120px;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -60px;
+}
+
+.newtooltip:hover .newtooltiptext {
+  visibility: visible;
+}
+
 	</style>
 
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -451,7 +477,12 @@ Welcome Slider
                   <div id="correctnetwork" style="display:none;width:100%">
                   	<p>
             <center><span><h3></h3></span></center>
-          </p>
+          </p>  <div class="col-xs-12">
+            Dirty TokenContract: <span id="dirtytokencontract" style="font-size:x-small"></span>&nbsp;<a href="#" class="fa fa-copy newtooltip" onmouseenter="showcopy(this)" onclick="copyToClipboard('dirtytokencontract',this);return false;"><span class="newtooltiptext"></span></a><br>
+            LP Token Contract: <span style="font-size:x-small" id="lptokencontract"></span>&nbsp;<a href="#" class="fa fa-copy newtooltip" onmouseenter="showcopy(this)" onclick="copyToClipboard('lptokencontract',this);return false;"><span class="newtooltiptext"></span></a><br> 
+            DirtyCash Contract: <span style="font-size:x-small" id="dirtycashcontract"></span>&nbsp;<a href="#" class="fa fa-copy newtooltip" onmouseenter="showcopy(this)" onclick="copyToClipboard('dirtycashcontract',this);return false;"><span class="newtooltiptext"></span></a><br>
+            Farming/Staking Contract: <span style="font-size:x-small" id="farmingcontract"></span>&nbsp;<a href="#" class="fa fa-copy newtooltip" onmouseenter="showcopy(this)" onclick="copyToClipboard('farmingcontract',this);return false;"><span class="newtooltiptext"></span></a></div>
+
                     <div class="col-md-4 col-xs-4 pull-left" style="padding:10px">
 				            <div  class="content-area" style="padding-left:15px; padding-right:15px">
                       <video width="100%" height="240" autoplay loop muted="muted">
@@ -488,11 +519,13 @@ Welcome Slider
                       <p class="display_text">
                         DirtyCash in Escrow: <span id="dirtycash-unredeemed"></span>
                       </p>
-                      <alert class="col-xs-12 alert alert-info" style="display:none; font-size: x-small;" id="dcalert"></alert>
+                      <div class="col-xs-12 alert alert-info" style="display:none; font-size: x-small;" id="dcalert"></div>
+                      <div class="col-xs-12 alert alert-info" style="display:none; font-size: x-small;" id="dcalert1"></div>
                       <hr class="hz_div">
                       <br>
                       <center><img src="loading.svg" id="showLoading3" style="display:none;margin-bottom:10px"/></center>
                       <center><button style="display:none;margin-bottom:25px" id="dcwithdraw" class="btn btn-success" onclick="withdrawDC();">Withdraw All DirtyCash</button></center>
+                      <center><button style="display:none;margin-bottom:25px" id="dcescrow" class="btn btn-success" onclick="escrowDC();">Move Pending to Escrow</button></center>
                     </div>
 
 
@@ -827,6 +860,52 @@ function topFunction() {
   document.documentElement.scrollTop = 0;
 
 }
+
+function copydirty() {
+
+  console.log('dirty token copy icon clicked');
+
+  var value = document.getElementById("dirtytokencontract").innerText;
+
+  console.log(value);
+
+
+  navigator.clipboard.writeText(value).then(() => { alert('Copy successful'); }).catch((error) => { alert(`Copy failed! ${error}`); });
+  
+
+
+}
+
+function showcopy(event) {
+  
+  $(event).closest('.newtooltip').find('.newtooltiptext').css('background-color','black');
+  $(event).closest('.newtooltip').find('.newtooltiptext').text('Copy');
+
+}
+
+function copyToClipboard(selector, event) {
+
+  var text = document.getElementById(selector).innerText;
+
+  console.log('clipboard function called');
+  console.log('text is '+text+'')
+
+   const elem = document.createElement('textarea');
+   elem.value = text;
+   document.body.appendChild(elem);
+   elem.select();
+   document.execCommand('copy');
+   document.body.removeChild(elem);
+   $(event).closest('.newtooltip').find('.newtooltiptext').text('Copied!');
+   window.setTimeout(function() {
+     
+     $(event).closest('.newtooltip').find('.newtooltiptext').text('');
+     $(event).closest('.newtooltip').find('.newtooltiptext').css('background-color','initial');
+     
+   }, 1000);
+
+}
+
 
 </script>
 
