@@ -8,6 +8,13 @@
 
 	<style>
 
+    @import url('https://fonts.googleapis.com/css2?family=Monoton&display=swap');
+
+    .monoton {
+      font-family: 'Monoton', cursive;
+      font-size: 2.5rem;
+    }
+
 	.content-area {
 	border-color: mediumvioletred;
     border-style: solid;
@@ -49,8 +56,128 @@
   margin-left: -60px;
 }
 
+
 .newtooltip:hover .newtooltiptext {
   visibility: visible;
+}
+
+.loading {
+
+  display:none;
+  margin-bottom:10px;
+
+}
+
+.divtext {
+  white-space: break-spaces; 
+  color: white;
+  font-size: 15px;
+  position: absolute;
+  overflow: hidden;
+  margin-top: 10px;
+  /*top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);*/
+}
+
+.overlay {
+  position: absolute;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+  height: 0;
+  transition: .5s ease;
+}
+
+.collection_overlay {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(199,21,133,.8);
+  overflow: hidden;
+  width: 100%;
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+.nft-container .overlay.show{
+  height:80%;
+}
+
+@media (max-width: 480px) {
+  
+  #correctnetwork div {
+    margin-left:1%;
+  }
+
+  #galleryresult {
+    margin-left:-10px !important;
+  }
+
+  #galleryrow {
+    margin-left: 0px !important;
+  }
+
+  .nft-container {
+     margin-left: 0px !important;
+  }
+
+  .overlay {
+     margin-left: 0px !important;
+  }
+
+  .monoton {
+      font-family: 'Monoton', cursive;
+      font-size: 1.5rem;
+    }
+
+  .disconnected {
+    margin-left:5%;
+  }
+
+  .hero-area .block {
+    padding-left: 0px;
+  }
+}
+
+@media (min-width: 481px) {
+
+  #correctnetwork div {
+    margin-left:0px;
+  }
+
+  #galleryresult {
+    margin-left:0px !important;
+  }
+
+  #galleryrow {
+    margin-left: 0px !important;
+  }
+
+  .nft-container {
+     margin-left: 0px !important;
+  }
+
+  .overlay {
+     margin-left: 0px !important;
+  }
+
+  .monoton {
+      font-family: 'Monoton', cursive;
+      font-size: 2.5rem;
+    }
+
+  .disconnected {
+    margin-left:-1%;
+  }
+
+  .hero-area .block {
+    padding-left: 30px;
+  }
 }
 
 	</style>
@@ -413,7 +540,7 @@ Welcome Slider
 
 <section class="hero-area" style="padding: 0px !important">
 
-	<div class="block" style="width:100%;padding-left: 10px !important">
+	<div class="block" style="width:100%;">
 	
 
 			<center>
@@ -424,7 +551,7 @@ Welcome Slider
 
 			<br>
 
-			<div class="row" style="width:100%; margin-top: -10px; margin-bottom:200px">
+			<div class="row" style="width:100%; margin-top: -10px; margin-bottom:20px;">
 
 			
 
@@ -444,15 +571,15 @@ Welcome Slider
       <br>
 
 
-        <div class="" style="width:100%; margin-top: 25px">
+        <div class="" style="width:100%; margin-top: 5px">
 
-        <div class="block">
+        <div class="block" style="padding-left: 10px !important; ">
 
-        <div class="content-area" id="disconnected" class="panel">
+        <div class="disconnected content-area" id="disconnected" class="panel">
 
-            Welcome to Dirty.Finance LP Staking! Please connect your wallet to begin LP staking and earn $DirtyCash (XXX).
+            <center><br>Welcome to Dirty.Finance LP Staking! Please connect your wallet to begin LP staking and earn $DirtyCash (XXX).
 
-            DirtyCash can be redeemed for exclusive Dirty NFT's!!<br><hr class="hz_div"><br>
+            DirtyCash can be redeemed for exclusive Dirty NFT's!!</center><br><hr class="hz_div"><br>
 
             <center> How to earn $DirtyCash (XXX) 
 
@@ -477,154 +604,186 @@ Welcome Slider
                   <div id="correctnetwork" style="display:none;width:100%">
                   	<p>
             <center><span><h3></h3></span></center>
-          </p>  <div class="col-xs-12">
-            Dirty TokenContract: <span id="dirtytokencontract" style="font-size:x-small"></span>&nbsp;<a href="#" class="fa fa-copy newtooltip" onmouseenter="showcopy(this)" onclick="copyToClipboard('dirtytokencontract',this);return false;"><span class="newtooltiptext"></span></a><br>
-            LP Token Contract: <span style="font-size:x-small" id="lptokencontract"></span>&nbsp;<a href="#" class="fa fa-copy newtooltip" onmouseenter="showcopy(this)" onclick="copyToClipboard('lptokencontract',this);return false;"><span class="newtooltiptext"></span></a><br> 
-            DirtyCash Contract: <span style="font-size:x-small" id="dirtycashcontract"></span>&nbsp;<a href="#" class="fa fa-copy newtooltip" onmouseenter="showcopy(this)" onclick="copyToClipboard('dirtycashcontract',this);return false;"><span class="newtooltiptext"></span></a><br>
-            Farming/Staking Contract: <span style="font-size:x-small" id="farmingcontract"></span>&nbsp;<a href="#" class="fa fa-copy newtooltip" onmouseenter="showcopy(this)" onclick="copyToClipboard('farmingcontract',this);return false;"><span class="newtooltiptext"></span></a></div>
+          </p>  
+                  <div class="row" style="padding:10px">
+                      <div class="col-md-12 content-area" style="padding-top:0px !important"><center><span style="font-size:small">
+                              
+                                      Connected blockchain: <span id="network-name"></span> |
+                                    
 
-                    <div class="col-md-4 col-xs-4 pull-left" style="padding:10px">
-				            <div  class="content-area" style="padding-left:15px; padding-right:15px">
-                      <video width="100%" height="240" autoplay loop muted="muted">
-                        <source src="images/girl_quarters.mp4" type="video/mp4">
-                      Your browser does not support the video tag.
-                      </video>
-                      <br>
-                      <hr class="hz_div">
-                      <br>
-				              <p class="display_text">
-				                Connected blockchain: <span id="network-name"></span>
-				              </p>
+                                    
+                                      Selected account: <span id="selected-account" style="font-size:x-small;word-break: break-all;"></span> |
+                                    
 
-				              <p class="display_text">
-				                Selected account: <span id="selected-account" style="font-size:x-small;word-break: break-all;"></span>
-				              </p>
+                                    
+                                      Ethereum Balance: <span id="account-balance"></span> |
+                                    
 
-				              <p class="display_text">
-				                Ethereum Balance: <span id="account-balance"></span>
-				              </p>
+                                    
+                                      Dirty Balance: <span id="dirty-balance"></span> |
+                                    
 
-                      <p class="display_text">
-                        Dirty Balance: <span id="dirty-balance"></span>
-                      </p>
-
-                      <p class="display_text">
-                        Dirty LP Balance: <span id="dirtylp-balance"></span>
-                      </p>
-
-                      <p class="display_text">
-                        DirtyCash Wallet Balance: <span id="dirtycash-balance"></span>
-                      </p>
-
-                      <p class="display_text">
-                        DirtyCash in Escrow: <span id="dirtycash-unredeemed"></span>
-                      </p>
-                      <div class="col-xs-12 alert alert-info" style="display:none; font-size: x-small;" id="dcalert"></div>
-                      <div class="col-xs-12 alert alert-info" style="display:none; font-size: x-small;" id="dcalert1"></div>
-                      <hr class="hz_div">
-                      <br>
-                      <center><img src="loading.svg" id="showLoading3" style="display:none;margin-bottom:10px"/></center>
-                      <center><button style="display:none;margin-bottom:25px" id="dcwithdraw" class="btn btn-success" onclick="withdrawDC();">Withdraw All DirtyCash</button></center>
-                      <center><button style="display:none;margin-bottom:25px" id="dcescrow" class="btn btn-success" onclick="escrowDC();">Move Pending to Escrow</button></center>
-                    </div>
-
-
-				            </div> <!--#correctnetwork-->
-
-                     <div class="col-md-4 col-xs-4 pull-left" style="padding:10px">
-                    <div  class="content-area" style="padding-left:15px; padding-right:15px">
-                      <img class="img-fluid" src="https://dirty.finance/images/farmingpromo.png">
-                      <p class="display_text">
-                        LP Staking: <span id="network-name"></span><br>
-                        Stake your Dirty LP tokens and earn over 2x DirtyCash rewards!<br><br>
-
-                        Pool Info (<a href="#" onclick="$('#lppoolinfo').toggle();return false;">click to expand</a>): <br>
-                        <div id="lppoolinfo" class="display_text" style="display:none;margin-bottom:10px">
-                        -Stake Min 1000, Max 10,000 LP Tokens (depending on price)<br>
-                        -Earns DirtyCash at ~2x rate over Dirty Token staking<br>
-                        -No tax for unstaking your LP tokens<br>
-                        -Unstake timer is 24 hours<br>
-                        -DirtyCash rewards can stay on site or be withdrawn<br>
+                                    
+                                      Dirty LP Balance: <span id="dirtylp-balance"></span> 
+                                    </span></center>
                       </div>
-                      <hr class="hz_div">
-                      </p>
+                 </div>
 
-                      <p class="display_text">
-                        Total LP Tokens Staked in Pool: <span id="totalstakedlp"></span>
-                      </p>
+                    
+                    <div class="row">
+                     
 
-                      <p class="display_text">
-                        My Staked LP tokens: <span id="mystakedlp"></span>
-                      </p>
+                    <div class="main col-md-4" style="padding:10px">
+                      <div  class="content-area" style="padding-left:15px; padding-right:15px">
+                        <video width="100%" height="240" autoplay loop muted="muted">
+                          <source src="images/girl_quarters.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                        </video>
+                        <br>
+                        <hr class="hz_div">
+                        <br>
+                        <span style="font-size:x-small">Dirty TokenContract: </span><span id="dirtytokencontract" style="font-size:x-small"></span>&nbsp;<a href="#" class="fa fa-copy newtooltip" onmouseenter="showcopy(this)" onclick="copyToClipboard('dirtytokencontract',this);return false;"><span class="newtooltiptext"></span></a><br><br>
+                        <span style="font-size:x-small">DirtyCash Contract: </span><span style="font-size:x-small" id="dirtycashcontract"></span>&nbsp;<a href="#" class="fa fa-copy newtooltip" onmouseenter="showcopy(this)" onclick="copyToClipboard('dirtycashcontract',this);return false;"><span class="newtooltiptext"></span></a><br><br>
+                        
 
-                      <p class="display_text">
-                        Pending DirtyCash rewards: <span id="pendinglprewards"></span>
-                      </p>
-                      <div class="col-xs-12 alert alert-info" style="display:none; font-size: x-small;" id="lpalert"></div>
-                      <hr class="hz_div">
-                      <br>
-                      <center><img src="loading.svg" id="showLoading1" style="display:none;margin-bottom:10px"/></center>
-                      <center><a style="display:none" id="uniswaplp" href="https://app.uniswap.org/#/add/v2/ETH/0x62EcF49636F282313cda51E2e3cbF0E258e65356" target="_blank"><button class="btn btn-success">Add Liquidity on Uniswap</button></a></center>
-                      <center><button style="display:none" id="lpapprove" class="btn btn-info" onclick="approveLP();">Approve LP Tokens</button></center>
-                       <center><div id="lpdeposit" style="display:none">Enter Deposit Amount:<input type="text" id="lpamount" name="lpamount" size="13"/><br><br><button id="deposit0" class="btn btn-info" onclick="depositLP();">Deposit LP Tokens</button>&nbsp;&nbsp;<button style="display:none" id="lpunstake" class="btn btn-danger" onclick="unstakeLP();">Unstake LP</button></div></center>
-                      <center><button style="display:none" id="lpunstake1" class="btn btn-danger" onclick="unstakeLP();">Unstake LP</button></center>
-                      <center><button style="display:none" id="lpwithdraw" class="btn btn-success" onclick="withdrawLP();">Withdraw LP Tokens</button></center>
-                      <center><button style="display:none" id="lpdcwd" class="btn btn-success">Withdraw DirtyCash</button></center>
-                      <br>
-                    </div>
-                    </div> <!--#correctnetwork-->
+                        <p class="display_text">
+                          DirtyCash Wallet Balance: <span id="dirtycash-balance"></span>
+                        </p>
 
-                     <div class="col-md-4 col-xs-4 pull-left" style="padding:10px">
-                    <div  class="content-area" style="padding-left:15px; padding-right:15px">
-                      <img class="img-fluid" src="https://dirty.finance/images/stakingpromo.png">
-                      <br>
-                      <p class="display_text">
-                        Dirty Staking: <span id="network-name"></span>
-                        Stake your Dirty Finance tokens and earn 1x DirtyCash rewards!<br><br>
-
-                        Pool Info (<a href="#" onclick="$('#poolinfo').toggle();return false;">click to expand</a>): <br>
-                        <div id="poolinfo" class="display_text" style="display:none; margin-bottom:10px">
-                        -No 5% tax to join the pool, 1% exit tax<br>
-                        -Stake Min 21 Million, Max 2.1 Billion Dirty Tokens (price dependent)<br>
-                        -Earns DirtyCash at ~.5x rate of LP Token staking<br>
-                        -Receive 1% of all unstaker's amount proportional to your pool share (distributed only when unstaking yourself)<br>
-                        -Receive holder rewards (2% from each Dirty transaction)<br>
-                        -Receive a % of Dirty used to purchase NFT's (based on creator/influencer split with pool)<br>
-                        -Unstake timer is 24 hours<br>
-                        -DirtyCash rewards can stay on site or be withdrawn<br>
+                        <p class="display_text">
+                          DirtyCash in Escrow: <span id="dirtycash-unredeemed"></span>
+                        </p>
+                        <div class="col-xs-12 alert alert-info" style="display:none; font-size: x-small;" id="dcalert"></div>
+                        <div class="col-xs-12 alert alert-info" style="display:none; font-size: x-small;" id="dcalert1"></div>
+                        <hr class="hz_div">
+                        <br>
+                        <center><img class="loading" src="loading.svg" id="showLoading3" /></center>
+                        <center><button style="display:none;margin-bottom:25px" id="dcwithdraw" class="btn btn-success" onclick="withdrawDC();">Withdraw All DirtyCash</button></center>
+                        <center><button style="display:none;margin-bottom:25px" id="dcescrow" class="btn btn-success" onclick="escrowDC();">Move Pending to Escrow</button></center>
                       </div>
-                      <hr class="hz_div">
-                      </p>
-                      <p class="display_text">
-                        Total Dirty Tokens Staked in Pool: <span id="totalstakeddirty"></span>
-                      </p>
 
-                      <p class="display_text">
-                        My Staked Dirty tokens: <span id="mystakeddirty">0.00 DIRTY</span>
-                      </p>
 
-                      <p class="display_text">
-                        My Pool Reward (Redeemed on Unstake & Withdraw): <span id="poolreward">0.00 DIRTY</span>
-                      </p>
+                    </div> <!--left-->
 
-                      <p class="display_text">
-                        Pending DirtyCash rewards: <span id="pendingstakerewards"></span>
-                      </p>
-                      <div class="col-xs-12 alert alert-info" style="display:none; font-size: x-small;" id="dirtyalert"></div>
-                      <hr class="hz_div">
-                      <br>
-                      <center><img src="loading.svg" id="showLoading2" style="display:none;margin-bottom:10px"/></center>
-                      <center><a style="display:none" id="uniswapdirty" href="https://app.uniswap.org/#/swap?outputCurrency=0x62EcF49636F282313cda51E2e3cbF0E258e65356&use=v2" target="_blank"><button class="btn btn-success">Buy Dirty on Uniswap</button></a></center>
+                    <div class="lp col-md-4" style="padding:10px">
+                        <div  class="content-area" style="padding-left:15px; padding-right:15px">
+                          <img class="img-fluid" src="https://dirty.finance/images/farmingpromo.png">
+                          <p class="display_text">
+                            LP Staking: <span id="network-name"></span><br><br>
+                            Stake your Dirty LP tokens and earn over 2x DirtyCash rewards!<br><br>
+                            <span style="font-size:x-small">LP Token Contract: </span><span style="font-size:x-small" id="lptokencontract"></span>&nbsp;<a href="#" class="fa fa-copy newtooltip" onmouseenter="showcopy(this)" onclick="copyToClipboard('lptokencontract',this);return false;"><span class="newtooltiptext"></span></a><br><br>
 
-                      <center><button style="display:none" id="dtapprove" class="btn btn-info" onclick="approveDirty();">Approve Dirty</button></center>
-                      <center><div id="dtdeposit" style="display:none">Enter Deposit Amount:<input type="text" id="dirtyamount" name="dirtyamount" size="13"/><br><br><button id="deposit" class="btn btn-info" onclick="depositDirty();">Deposit Dirty</button>&nbsp;&nbsp;<button style="display:none" id="dtunstake" class="btn btn-danger" onclick="unstakeDirty();">Unstake Dirty</button></div></center>
-                      <center><button style="display:none" id="dtunstake1" class="btn btn-danger" onclick="unstakeDirty();">Unstake Dirty</button></center>
-                      <center><button style="display:none" id="dtwithdraw" class="btn btn-success" onclick="withdrawDirty();">Withdraw Dirty Tokens</button></center>
-                      <center><button style="display:none" id="dtdcwd" class="btn btn-success">Withdraw DirtyCash</button></center>
+                            Pool Info (<a href="#" onclick="$('#lppoolinfo').toggle();return false;">click to expand</a>): <br>
+                            <div id="lppoolinfo" class="display_text" style="display:none;margin-bottom:10px">
+                            -Stake Min 1000, Max 10,000 LP Tokens (depending on price)<br>
+                            -Earns DirtyCash at ~2x rate over Dirty Token staking<br>
+                            -No tax for unstaking your LP tokens<br>
+                            -Unstake timer is 24 hours<br>
+                            -DirtyCash rewards can stay on site or be withdrawn<br>
+                          </div>
+                          <hr class="hz_div">
+                          </p>
+
+                          <p class="display_text">
+                            Total LP Tokens Staked in Pool: <span id="totalstakedlp"></span>
+                          </p>
+
+                          <p class="display_text">
+                            My Staked LP tokens: <span id="mystakedlp"></span>
+                          </p>
+
+                          <p class="display_text">
+                            Pending DirtyCash rewards: <span id="pendinglprewards"></span>
+                          </p>
+                          <div class="col-xs-12 alert alert-info" style="display:none; font-size: x-small;" id="lpalert"></div>
+                          <hr class="hz_div">
+                          <br>
+                          <center><img class="loading" src="loading.svg" id="showLoading1" /></center>
+                          <center><a style="display:none" id="uniswaplp" href="https://app.uniswap.org/#/add/v2/ETH/0x62EcF49636F282313cda51E2e3cbF0E258e65356" target="_blank"><button class="btn btn-success">Add Liquidity on Uniswap</button></a></center>
+                          <center><button style="display:none" id="lpapprove" class="btn btn-info" onclick="approveLP();">Approve LP Tokens</button></center>
+                           <center><div id="lpdeposit" style="display:none">Enter Deposit Amount:<input type="text" id="lpamount" name="lpamount" size="13"/><br><br><button id="deposit0" class="btn btn-info" onclick="depositLP();">Deposit LP Tokens</button>&nbsp;&nbsp;<button style="display:none" id="lpunstake" class="btn btn-danger" onclick="unstakeLP();">Unstake LP</button></div></center>
+                          <center><button style="display:none" id="lpunstake1" class="btn btn-danger" onclick="unstakeLP();">Unstake LP</button></center>
+                          <center><button style="display:none" id="lpwithdraw" class="btn btn-success" onclick="withdrawLP();">Withdraw LP Tokens</button></center>
+                          <center><button style="display:none" id="lpdcwd" class="btn btn-success">Withdraw DirtyCash</button></center>
+                          <br>
+                        </div>
+                    </div> <!--middle-->
+
+                     <div class="dirty col-md-4" style="padding:10px">
+                      <div  class="content-area" style="padding-left:15px; padding-right:15px">
+                        <img class="img-fluid" src="https://dirty.finance/images/stakingpromo.png">
+                        <br>
+                        <p class="display_text">
+                          Dirty Staking: <span id="network-name"></span>
+                          Stake your Dirty Finance tokens and earn 1x DirtyCash rewards!<br><br>
+                          <span style="font-size:x-small">Farming/Staking Contract: </span><span style="font-size:x-small" id="farmingcontract"></span>&nbsp;<a href="#" class="fa fa-copy newtooltip" onmouseenter="showcopy(this)" onclick="copyToClipboard('farmingcontract',this);return false;"><span class="newtooltiptext"></span></a><br><br>
+
+                          Pool Info (<a href="#" onclick="$('#poolinfo').toggle();return false;">click to expand</a>): <br>
+                          <div id="poolinfo" class="display_text" style="display:none; margin-bottom:10px">
+                          -No 5% tax to join the pool, 1% exit tax<br>
+                          -Stake Min 21 Million, Max 2.1 Billion Dirty Tokens (price dependent)<br>
+                          -Earns DirtyCash at ~.5x rate of LP Token staking<br>
+                          -Receive 1% of all unstaker's amount proportional to your pool share (distributed only when unstaking yourself)<br>
+                          -Receive holder rewards (2% from each Dirty transaction)<br>
+                          -Receive a % of Dirty used to purchase NFT's (based on creator/influencer split with pool)<br>
+                          -Unstake timer is 24 hours<br>
+                          -DirtyCash rewards can stay on site or be withdrawn<br>
+                        </div>
+                        <hr class="hz_div">
+                        </p>
+                        <p class="display_text">
+                          Total Dirty Tokens Staked in Pool: <span id="totalstakeddirty"></span>
+                        </p>
+
+                        <p class="display_text">
+                          My Staked Dirty tokens: <span id="mystakeddirty">0.00 DIRTY</span>
+                        </p>
+
+                        <p class="display_text">
+                          <span style="font-size:x-small">My Pool Reward (Redeemed on Unstake & Withdraw): </span><span id="poolreward">0.00 DIRTY</span>
+                        </p>
+
+                        <p class="display_text">
+                          Pending DirtyCash rewards: <span id="pendingstakerewards"></span>
+                        </p>
+                        <div class="col-xs-12 alert alert-info" style="display:none; font-size: x-small;" id="dirtyalert"></div>
+                        <hr class="hz_div">
+                        <br>
+                        <center><img class="loading" src="loading.svg" id="showLoading2" /></center>
+                        <center><a style="display:none" id="uniswapdirty" href="https://app.uniswap.org/#/swap?outputCurrency=0x62EcF49636F282313cda51E2e3cbF0E258e65356&use=v2" target="_blank"><button class="btn btn-success">Buy Dirty on Uniswap</button></a></center>
+
+                        <center><button style="display:none" id="dtapprove" class="btn btn-info" onclick="approveDirty();">Approve Dirty</button></center>
+                        <center><div id="dtdeposit" style="display:none">Enter Deposit Amount:<input type="text" id="dirtyamount" name="dirtyamount" size="13"/><br><br><button id="deposit" class="btn btn-info" onclick="depositDirty();">Deposit Dirty</button>&nbsp;&nbsp;<button style="display:none" id="dtunstake" class="btn btn-danger" onclick="unstakeDirty();">Unstake Dirty</button></div></center>
+                        <center><button style="display:none" id="dtunstake1" class="btn btn-danger" onclick="unstakeDirty();">Unstake Dirty</button></center>
+                        <center><button style="display:none" id="dtwithdraw" class="btn btn-success" onclick="withdrawDirty();">Withdraw Dirty Tokens</button></center>
+                        <center><button style="display:none" id="dtdcwd" class="btn btn-success">Withdraw DirtyCash</button></center>
+                        
+                        <br>
+                      </div>
+                    </div>
+                  </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="row" style="padding:10px">
+                    <div class="col-md-12 content-area" style="padding:20px">
                       
-                      <br>
+                    <center>
+                      <button id="gallerybtn" class="btn btn-info" onclick="loadgallery();/*RefreshGallery(60000);*/$(this).attr('disabled','disabled');$('#showLoading4').show();">Load NFT Gallery</button><div class="loading" id="showLoading4"><br><img  src="loading.svg" /></div>
+                    </center>
+                    
+
+                    <div class="col-xs-12" id="galleryresult">
+                      <div class="row" id="galleryrow" style="margin-right:1%; margin-top: 15px">
+                      </div>
                     </div>
+
+                    </div>
+                  </div>
+
                     </div> <!--#correctnetwork-->
+
+
 
 			    </div> <!--#connected-->
 
@@ -807,7 +966,7 @@ Welcome Slider
 
 $(function() {
 
-    $('.scroll-down').click (function() {
+    $('.scroll-down').click(function() {
 
       $('html, body').animate({scrollTop: $('section.ok').offset().top }, 'slow');
 
@@ -891,6 +1050,7 @@ function copyToClipboard(selector, event) {
    }, 1000);
 
 }
+
 
 
 </script>
