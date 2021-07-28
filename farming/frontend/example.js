@@ -67,6 +67,8 @@ let dirtyerror = false;
 let lperror = false;
 let dcerror = false;
 
+let stakinginterval;
+
 /**
  * Setup the orchestra
  */
@@ -743,29 +745,29 @@ async function fetchAccountData() {
                     if (+totalaccrued > 0) {
 
                     	farmingcontract.methods.rewardWithdrawalStatus().call(function(err,res){
-					  				if(!err){
+			  				if(!err){
 
-					  					if (res == true) {
+			  					if (res == true) {
 
-					  						//reward withdrawals are enabled
-					  						document.getElementById("dcalert").style.display = 'block';
-											document.getElementById("dcalert").classList.remove("alert-danger");
-								        	document.getElementById("dcalert").classList.remove("alert-success"); 
-								        	document.getElementById("dcalert").classList.add("alert-info"); 
-											document.getElementById("dcalert").innerText = 'DirtyCash withdrawals are enabled';
-											document.getElementById("dcwithdraw").style.display = 'block';
+			  						//reward withdrawals are enabled
+			  						document.getElementById("dcalert").style.display = 'block';
+									document.getElementById("dcalert").classList.remove("alert-danger");
+						        	document.getElementById("dcalert").classList.remove("alert-success"); 
+						        	document.getElementById("dcalert").classList.add("alert-info"); 
+									document.getElementById("dcalert").innerText = 'DirtyCash withdrawals are enabled';
+									document.getElementById("dcwithdraw").style.display = 'block';
 
-					  					} else {
+			  					} else {
 
-					  						document.getElementById("dcalert").style.display = 'block';
-											document.getElementById("dcalert").classList.remove("alert-info"); 
-								        	document.getElementById("dcalert").classList.remove("alert-success"); 
-								        	document.getElementById("dcalert").classList.add("alert-danger"); 
-											document.getElementById("dcalert").innerText = 'DirtyCash withdrawals are not currently enabled';
-											document.getElementById("dcwithdraw").style.display = 'none';
-					  					}
+			  						document.getElementById("dcalert").style.display = 'block';
+									document.getElementById("dcalert").classList.remove("alert-info"); 
+						        	document.getElementById("dcalert").classList.remove("alert-success"); 
+						        	document.getElementById("dcalert").classList.add("alert-danger"); 
+									document.getElementById("dcalert").innerText = 'DirtyCash withdrawals are not currently enabled';
+									document.getElementById("dcwithdraw").style.display = 'none';
+			  					}
 
-					  				}
+			  				}
 					  });
 
                     } else {
@@ -1654,8 +1656,343 @@ async function withdrawDC() {
 		}); // sendTransaction
 
 }
-   
 
+Element.prototype.insertChildAtIndex = function(child, index) {
+	console.log(index);
+
+	if (this.children.length == 0) {
+		this.appendChild(child);
+	} else {
+		var lastelem = document.getElementById('galleryrow').lastChild.id;
+	    var lastdivnum = lastelem.charAt(0);
+
+	    if (+lastdivnum > index) { //index is smaller than last div
+
+	    	var firstelem = document.getElementById('galleryrow').firstElementChild.id;
+	        var firstdivnum = firstelem.charAt(0);
+
+	        if (+firstdivnum > index) { //index is smaller than first div, move to front
+	        	this.insertBefore(child, document.getElementById(firstelem));
+	        } else {
+	        	if ((+lastdivnum - index) > 1) {
+	        		this.insertBefore(child, document.getElementById(firstelem).nextSibling);
+	        		
+	        	} else {
+	        		this.insertBefore(child, document.getElementById(lastelem));
+	        	}
+	        	
+	        }
+	    	
+
+	    } else {
+	    	this.appendChild(child);
+	    }
+	}
+
+}
+
+function sortAll(selector) {
+
+	//console.log('sorting called');
+
+	var toSort = document.getElementById(selector).children;
+	//console.log(toSort);
+	toSort = Array.prototype.slice.call(toSort, 0);
+
+	toSort.sort(function(a, b) {
+	    var aord = +a.id.split('-')[1];
+	    var bord = +b.id.split('-')[1];
+	    // two elements never have the same ID hence this is sufficient:
+	    return (aord > bord) ? 1 : -1;
+	});
+
+	var parent = document.getElementById(selector);
+	parent.innerHTML = "";
+
+	for(var i = 0, l = toSort.length; i < l; i++) {
+	    parent.appendChild(toSort[i]);
+	}
+
+}
+
+async function populatenft(data, id, tokenuri, creatoraddress, minted, mintlimit, price, isredeemable) {
+    //console.log(data);
+    if (data !== null) {
+    	
+    	const web3 = new Web3(provider);
+		const accounts = await web3.eth.getAccounts();
+	    selectedAccount = accounts[0];
+
+		var farmingcontract = new web3.eth.Contract(JSON.parse(farmABI),farmAddress);
+		var nftcontract = new web3.eth.Contract(JSON.parse(DirtyNFTABI),nftAddress);
+
+		var nftprice = web3.utils.toWei(price);
+		//console.log(isredeemable);
+
+		farmingcontract.methods.getConversionPrice(nftprice).call(function(err,res){
+			if (!err) {
+
+				var dirtyprice = web3.utils.fromWei(res).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+				//console.log(dirtyprice);
+
+				farmingcontract.methods.totalEarnedCreator(id).call(function(err,res){
+					if (!err) {
+
+						var totalCreator = res;
+
+						farmingcontract.methods.totalEarnedBurn(id).call(function(err,res){
+							if (!err) {
+
+								var totalBurn = res;
+
+								farmingcontract.methods.totalEarnedPool(id).call(function(err,res){
+									if (!err) {
+
+										var totalPool = res;
+
+										//console.log(data.image)
+
+								    	var attribstring = "";
+
+								    	var overlay_background = "background-color:rgba(199,21,133,.8);" //mediumvioletred default
+
+								    	if (+data.attributes[2].value == 1) {
+								    		overlay_background = "background-color:rgba(21,87,36,.8);" //green (common)
+								    	} 
+
+								    	if (+data.attributes[2].value == 2) {
+								    		overlay_background = "background-color:rgba(0,64,133,.8);" //blue (uncommon)
+								    	} 
+
+								    	if (+data.attributes[2].value == 3) {
+								    		overlay_background = "background-color:rgba(111,0,133,.8);" //purple (rare)
+								    	} 
+
+								    	if (+data.attributes[2].value == 4) {
+								    		overlay_background = "background-color:rgba(224,248,77,.8);"//yellow (legendary)
+								    	} 
+
+								    	if (+data.attributes[2].value == 5) {
+								    		overlay_background = "background-color:rgba(254,161,0,.8);"//orange (exotic)
+								    	} 
+
+								    	if (+data.attributes[2].value == 6) {
+								    		overlay_background = "background-color:rgba(170,0,0,.8);"//red (god tier)
+								    	} 
+
+
+
+								    	var tempdata = data.attributes[0].trait_type + ": " + data.attributes[0].value + "<BR>"; //collection
+								    	tempdata +="NFT Name: " + data.name + "<BR>";
+								    	tempdata += data.attributes[1].trait_type + ": " + data.attributes[1].value + "<BR>"; //rarity
+								    	tempdata += data.attributes[2].trait_type + ": " + data.attributes[2].value + "<BR>"; //stars
+								    	tempdata += data.attributes[3].trait_type + ": " + data.attributes[3].value + "<BR>"; //variant
+									    tempdata += "<em>'"+data.description+"'</em><br>";
+									    tempdata += "Linkspage: <a style='color:white' href='"+data.linkspage+"' target='_blank'>" + data.linkspage + "</a><BR>";
+									    tempdata += "Contract: "+nftAddress+"<BR>";
+									    tempdata += "<br>"
+									    tempdata += "Total Minted So Far: "+minted+"/"+mintlimit+"<BR>";
+									    
+									    tempdata += "<br>"
+									    
+									    if (!isredeemable) {
+									    	tempdata += "Purchase price: "+dirtyprice+" Dirty Tokens<BR>";
+									    	tempdata += "<div class='col-md-12'><button class='btn btn-default'>Purchase for "+dirtyprice+" Dirty</button><img src='loading.svg' style='display:none' id='"+id+"purchase' /></div>"
+									    	tempdata += "<br>"
+									    } else {
+
+									    	//tempdata += "Redeem price: $"+price+" DirtyCash<BR>";
+									    	tempdata += "<div class='col-md-6'><button class='btn btn-success'>Reedeem for $"+price+" DirtyCash</button><img src='loading.svg' style='display:none' id='"+id+"redeem' /></div>";
+									    	//tempdata += "Purchase price: "+dirtyprice+" Dirty Tokens<BR>";
+									    	tempdata += "<br>"
+									    	tempdata += "<div class='col-md-6'><button class='btn btn-default'>Purchase for "+dirtyprice+" Dirty</button><img src='loading.svg' style='display:none' id='"+id+"purchase' /></div>"
+									    	tempdata += "<br>"
+									    }	
+
+									    tempdata += "Sharing Totals: <br>"
+									    tempdata += "Total to creator: "+totalCreator+" Dirty Tokens<BR>";
+									    tempdata += "Total to burn: "+totalBurn+" Dirty Tokens<BR>";
+									    tempdata += "Total to pool: "+totalPool+" Dirty Tokens<BR>";
+
+
+
+
+									   /* data.attributes.forEach(element => {
+
+									    	attribstring += element.trait_type+": "+ element.value + "<BR>"
+
+									    });*/
+
+									    var theDiv = document.getElementById("galleryrow");			
+
+									    if (document.getElementById(""+data.attributes[0].value+"-collection")) {
+
+					                        console.log('collection exists');
+
+					                        var collectionRow = document.getElementById(""+data.attributes[0].value+"-row");
+					                        
+					                    } else {
+					                       
+					                       console.log('collection is being created');
+
+					                       var collectionNode = document.createElement('div');
+					                        collectionNode.setAttribute('id', ""+data.attributes[0].value+"-collection");
+					                        //collectionNode.setAttribute('onclick', '$("#'+data.attributes[0].value+'-row").toggle()');
+					                        collectionNode.classList.add("col-md-12");
+					                        collectionNode.classList.add("content-area");
+					                        theDiv.appendChild(collectionNode);
+					                        collectionNode.innerHTML = "<div class='col-md-12' onclick=$('#"+data.attributes[0].value+"-row').slideToggle(750); style='cursor:pointer;background-image:url("+data.thumbnail+");background-repeat:no-repeat;background-attachment: fixed;background-size:cover;background-position:center;padding-left:0px;padding-right:0px;border-color: mediumvioletred;    border-style: solid;background-color: rgba(0,0,0,.8);border-radius: 28px;'><div style='backdrop-filter:grayscale(1)blur(4px);margin-left:0px;' class='collection_overlay content-area' onmouseover=$(this).css('backdrop-filter','grayscale(0)blur(0px)'); onmouseout=$(this).css('backdrop-filter','grayscale(1)blur(4px)'); ><center><h1 class='monoton' style='color:white;margin-top:5%;margin-bottom:5%'>The "+data.attributes[0].value+" Collection</h1><span><em>click to view</em></center><hr class='hz_div'></div></div>"
+					                        var collectionRow = document.createElement('div');
+					                        collectionRow.setAttribute('id', ""+data.attributes[0].value+"-row");
+					                        collectionRow.classList.add("col-md-12");
+					                        collectionRow.classList.add("row");
+					                        collectionRow.style.display = 'none';
+					                        collectionRow.style.paddingLeft = '0px';
+					                        collectionRow.style.paddingRight = '0px';
+					                        collectionNode.appendChild(collectionRow);
+					                        
+					                    }				    
+									    
+									    var newNode = document.createElement('div');
+									    newNode.setAttribute('id',"div-"+id);
+									    newNode.classList.add("col-md-4");
+									    newNode.classList.add("nft-container");
+									    newNode.style.paddingBottom = ("20px");
+									    newNode.style.paddingTop = ("20px");
+									    /*newNode.style.border = ("white");
+									    newNode.style.borderStyle = ("solid");*/
+									    //theDiv.insertChildAtIndex(newNode, id);
+									    collectionRow.appendChild(newNode);
+
+									    //console.log(data);
+										newNode.innerHTML =  "<div class='overlay' style='"+overlay_background+";backdrop-filter:blur(4px);border-top-left-radius:25px;border-top-right-radius:25px;'><div class='divtext col-md-12'>"+tempdata+"</div></div><div><img id='"+id+"img' style='border:mediumvioletred;border-style:solid' onmouseover=this.style.borderColor='white'; onmouseout=this.style.borderColor='mediumvioletred'; src="+data.thumbnail+" class='img-fluid'><button id="+id+"btn class='btn btn-info' onclick=$(this).text('Loading...');$('#"+id+"btnload').show();$('#"+id+"img').attr('src','"+data.image+"').one('load',function(){$('#"+id+"btn').attr('disabled','disabled');$('#"+id+"btn').text('Done!');$('#"+id+"btnload').hide()});>Load GIF</button><button class='btn btn-success pull-right' onclick=$('#div-"+id+"').children('.overlay').toggleClass('show');>View NFT Info</button><img src='loading.svg' style='display:none' id="+id+"btnload /><div>"
+
+
+									}
+								});
+
+							}
+						});
+
+					}
+				});
+
+			}
+
+		});
+		
+
+	} //if (data !== null)
+
+}
+
+   
+function loadgallery() {
+
+	const web3 = new Web3(provider);
+	/*const accounts = await web3.eth.getAccounts();
+    selectedAccount = accounts[0];*/
+
+	var farmingcontract = new web3.eth.Contract(JSON.parse(farmABI),farmAddress);
+	var nftcontract = new web3.eth.Contract(JSON.parse(DirtyNFTABI),nftAddress);
+
+	nftcontract.methods.getCurrentNFTID().call(function(err,res){
+        if(!err){
+
+        	var total = +res;
+          
+          	if (+total > 0) {
+
+          		for (let i=1;i<=+total;i++) {
+
+          			nftcontract.methods.creatorInfo(i).call(function(err,res){
+
+          				if (!err) { 
+          					//console.log(res);
+          					if (res.exists) {
+
+          						//console.log(i);
+
+          						var result = res;
+          						var nftprice = web3.utils.fromWei(res.price);
+          						/*console.log(res.creatorAddress); //
+		                        console.log(res.creatorName); //
+		                        console.log(res.exists); //+
+		                        console.log(res.mintLimit); //+
+		                        console.log(res.nftName); //
+		                        console.log(res.price); //+
+		                        console.log(res.redeemable); //+*/
+
+		                        nftcontract.methods.mintedCountbyID(i).call(function(err,res){
+		                        	if (!err) { 
+		                        		var minted = res;
+
+		                        		const getJSON = async url => {
+				                        const response = await fetch(url); 
+
+				                        return response.json(); // get JSON from the response 
+				                        }
+
+				                        
+				                        	// console.log("Fetching data...");
+				                        var data = getJSON(result.uri).then(data => populatenft(data, i, result.uri, result.creatorAddress, minted, result.mintLimit, nftprice, result.redeemable));
+					                    
+				                    }
+		                        });
+
+		          				
+	          				}
+		          				
+	          				
+                     	}
+
+          			});
+
+          		} // for
+
+          		window.setTimeout(function () {
+
+          			document.getElementById("showLoading4").style.display = 'none'; 
+          			document.getElementById("showLoading4").style.display = 'none'; 
+
+
+
+          			//var sortlist = document.getElementById('galleryrow').children;
+          			var sortlist = $("#galleryrow > div").map(function() {return this.id});
+          			var divsortlist = sortlist.get().join(",");
+          			console.log(divsortlist);
+          			var rowlist = document.getElementById(""+divsortlist+"").firstChild.nextSibling.id;
+          			console.log(rowlist);
+          			/*sortlist.forEach((entry) => {
+					    console.log(entry);
+					    sortAll(entry);
+					});*/
+					sortAll(rowlist);
+          			
+
+          		}, 2000);
+          		
+          		
+
+          	} else { 
+
+          		document.getElementById("galleryresult").innerText = "No NFT's found";
+
+          	} // if (+res > 0)
+                               
+            
+        } // if(!err)
+   });
+
+}
+
+async function redeemNFT() {
+
+}
+
+async function purchaseNFT() {
+
+}
 
 /**
  * Fetch account data for UI when
@@ -1676,7 +2013,7 @@ async function refreshAccountData() {
   // with Ethereum node via JSON-RPC and loads chain data
   // over an API call.
   document.querySelector("#btn-connect").setAttribute("disabled", "disabled")
-  await fetchAccountData(provider);
+  await fetchAccountData();
   document.querySelector("#btn-connect").removeAttribute("disabled")
   Refresh(30000);
 }
@@ -1727,6 +2064,10 @@ async function onConnect() {
  */
 async function onDisconnect() {
 
+	
+  window.clearInterval(stakinginterval);
+	
+
   console.log("Killing the wallet connection", provider);
 
   // TODO: Which providers have close method?
@@ -1754,12 +2095,42 @@ async function onDisconnect() {
 }
 
 function Refresh(interval) {
-  var interval = window.setInterval(function() {
+stakinginterval = window.setInterval(function() {
 fetchAccountData();
 console.log('updating')
 },interval);
 }
 
+function RefreshGallery(interval) {
+  var galleryinterval = window.setInterval(function() {
+  	document.getElementById("galleryrow").innerHTML = "";
+loadgallery();
+var x = 0;
+window.clearInterval(buttoninterval);
+
+	var buttoninterval = window.setInterval(function() {
+
+		x = x + 1;
+
+		if (x > 60) {
+
+			x = 1;
+
+		}
+
+		console.log(interval);
+		console.log(x);
+
+		var timeleft = (+interval/1000) - x;
+
+		console.log(timeleft);
+
+		document.getElementById("gallerybtn").innerText = "Reloading in "+timeleft+"";
+
+	},1000);
+console.log('updating gallery')
+},interval);
+}
 
 /**
  * Main entry point.
@@ -1768,4 +2139,5 @@ window.addEventListener('load', async () => {
   init();
   document.querySelector("#btn-connect").addEventListener("click", onConnect);
   document.querySelector("#btn-disconnect").addEventListener("click", onDisconnect);
+  
 });
