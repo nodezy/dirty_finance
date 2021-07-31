@@ -97,7 +97,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: rgba(199,21,133,.8);
+  /*background-color: rgba(199,21,133,.8);*/
   overflow: hidden;
   width: 100%;
   margin-left: -15px;
@@ -639,7 +639,17 @@ Welcome Slider
                           <source src="images/girl_quarters.mp4" type="video/mp4">
                         Your browser does not support the video tag.
                         </video>
+                        <hr class="hz_div">
                         <br>
+                        How to obtain DirtyCash (<a href="#" onclick="$('#dirtycashinfo').toggle();return false;">click to expand</a>): <br>
+                            <div id="dirtycashinfo" class="display_text" style="display:none;margin-bottom:10px"><br>
+                            -Add your Dirty Finance + ETH tokens to Uniswap liquidity and deposit them into the "Farming" pool<br>
+                            -Add your Dirty Finance tokens to the "Staking" pool <br>
+                            -Your DirtyCash rewards will be pending until you deposit/withdraw from any pool or redeem an NFT<br>
+                            -If DirtyCash withdrawals are disabled, you can manually move your pending rewards to the contract escrow if desired<br>
+                            -If DirtyCash withdrawals are enabled, you can manually move your pending + escrow rewards into your wallet <br>
+                            -The contract can take DirtyCash from escrow or your wallet to redeem an NFT, however the entire DirtyCash redeem amount must be in one or the other, not split up.<br>
+                          </div><br>
                         <hr class="hz_div">
                         <br>
                         <span style="font-size:x-small">Dirty TokenContract: </span><span id="dirtytokencontract" style="font-size:x-small"></span>&nbsp;<a href="#" class="fa fa-copy newtooltip" onmouseenter="showcopy(this)" onclick="copyToClipboard('dirtytokencontract',this);return false;"><span class="newtooltiptext"></span></a><br><br>
