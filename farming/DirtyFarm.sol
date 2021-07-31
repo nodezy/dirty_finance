@@ -31,18 +31,18 @@ contract Authorizable is Ownable {
     mapping(address => bool) public authorized;
 
     modifier onlyAuthorized() {
-        require(authorized[_msgSender()] || owner() == address(_msgSender()));
+        require(authorized[_msgSender()] || owner() == address(_msgSender()), "Sender is not authorized");
         _;
     }
 
     function addAuthorized(address _toAdd) onlyOwner public {
-        require(_toAdd != address(0));
+        require(_toAdd != address(0), "Address is the zero address");
         authorized[_toAdd] = true;
     }
 
     function removeAuthorized(address _toRemove) onlyOwner public {
-        require(_toRemove != address(0));
-        require(_toRemove != address(_msgSender()));
+        require(_toRemove != address(0), "Address is the zero address");
+        require(_toRemove != address(_msgSender()), "Sender cannot remove themself");
         authorized[_toRemove] = false;
     }
 
@@ -91,9 +91,9 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
     uint256 public blockRewardUpdateCycle = 1 days; // The cycle in which the dirtyPerBlock gets updated.
     uint256 public blockRewardLastUpdateTime = block.timestamp; // The timestamp when the block dirtyPerBlock was last updated.
     uint256 public blocksPerDay = 5000; // The estimated number of mined blocks per day, lowered so rewards are halved to start.
-    uint256 public blockRewardPercentage = 1; // The percentage used for dirtyPerBlock calculation.
+    uint256 public blockRewardPercentage = 10; // The percentage used for dirtyPerBlock calculation.
     uint256 public unstakeTime = 60; // Time in seconds to wait for withdrawal default (86400).
-    uint256 public poolReward = 10000000000000000000000; //starting basis for poolReward (default 10k).
+    uint256 public poolReward = 1000000000000000000000; //starting basis for poolReward (default 1k).
     uint256 public conversionRate = 100000; //conversion rate of DIRTYCASH => $dirty (default 100k).
     bool public enableRewardWithdraw = false; //whether DIRTYCASH is withdrawable from this contract (default false).
     uint256 public minDirtyStake = 21000000000000000000000000; //min stake amount (default 21 million Dirty).
@@ -102,6 +102,12 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
     uint256 public maxLPStake = 10000000000000000000000; //max lp stake amount (default 10,000 LP tokens).
     uint256 public promoAmount = 200000000000000000000; //amount of DIRTYCASH to give to new stakers (default 200 DIRTYCASH).
     bool public promoActive = true; //whether the promotional amount of DIRTYCASH is given out to new stakers (default is True).
+    uint256 public rewardSegment = poolReward.mul(100).div(200); //reward segment for dynamic staking.
+    uint256 public ratio; //ratio of pool0 to pool1 for dynamic staking.
+    uint256 public lpalloc = 65; //starting pool allocation for LP side.
+    uint256 public stakealloc = 35; //starting pool allocation for Dirty side.
+    uint256 public allocMultiplier = 5; //ratio * allocMultiplier to balance out the pools.
+    bool public dynamicStakingActive = true; //whether the staking pool will auto-balance rewards or not.
 
     mapping(address => bool) public addedLpTokens; // Used for preventing LP tokens from being added twice in add().
     mapping(uint256 => mapping(address => uint256)) public unstakeTimer; // Used to track time since unstake requested.
@@ -110,9 +116,12 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
     mapping(uint256 => uint256) public totalEarnedCreator; // Total amount of $dirty token spent to creator on a particular NFT.
     mapping(uint256 => uint256) public totalEarnedPool; // Total amount of $dirty token spent to pool on a particular NFT.
     mapping(uint256 => uint256) public totalEarnedBurn; // Total amount of $dirty token spent to burn on a particular NFT.
-
+    mapping(uint256 =>mapping(address => bool)) public userStaked; // Denotes whether the user is currently staked or not.
+    
     address public NFTAddress; //NFT contract address
     address public DirtyCashAddress; //DIRTYCASH contract address
+
+    IERC20 dirtytoken = IERC20(0x62EcF49636F282313cda51E2e3cbF0E258e65356); //dirty token
 
     event Unstake(address indexed user, uint256 indexed pid);
     event Deposit(address indexed user, uint256 indexed pid, uint256 amount);
@@ -207,6 +216,21 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
         poolInfo[_pid].allocPoint = _allocPoint;
     }
 
+    // Update the given pool's DIRTYCASH token allocation point when pool.
+    function adjustPools(
+        uint256 _pid,
+        uint256 _allocPoint,
+        bool _withUpdate
+    ) internal {
+        require(_allocPoint >= 1 && _allocPoint <= 100, "_allocPoint is outside of range 1-100");
+
+        if (_withUpdate) {
+            updatePool(_pid);
+        }
+        totalAllocPoint = totalAllocPoint.sub(poolInfo[_pid].allocPoint).add(_allocPoint);
+        poolInfo[_pid].allocPoint = _allocPoint;
+    }
+
     // View function to see pending DIRTYCASH tokens on frontend.
     function pendingRewards(uint256 _pid, address _user) public view returns (uint256) {
         PoolInfo storage pool = poolInfo[_pid];
@@ -238,7 +262,7 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
             return;
         }
 
-        uint256 lpSupply = pool.lpToken.balanceOf(address(this));
+        uint256 lpSupply = pool.runningTotal; //pool.lpToken.balanceOf(address(this));
         if (lpSupply == 0) {
             pool.lastRewardBlock = block.number;
             return;
@@ -295,10 +319,15 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
             
         
             unstakeTimer[_pid][_msgSender()] = 9999999999;
+            userStaked[_pid][_msgSender()] = true;
 
             if (!promoWallet[_msgSender()] && promoActive) {
                 userBalance[_msgSender()] = promoAmount; //give 200 promo DIRTYCASH
                 promoWallet[_msgSender()] = true;
+            }
+
+            if (dynamicStakingActive) {
+                updateVariablePoolReward();
             }
             
             user.rewardDebt = user.amount.mul(pool.accDirtyPerShare).div(1e12);
@@ -319,6 +348,8 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
         require(user.amount > 0, "You have no amount to unstake");
 
         unstakeTimer[_pid][_msgSender()] = block.timestamp.add(unstakeTime);
+        userStaked[_pid][_msgSender()] = false;
+        
 
     }
 
@@ -389,13 +420,19 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
                 emit Withdraw(_msgSender(), _pid, _amount);
             }
             
-        }
 
-        if (userAmount == _amount) { //user is retrieving entire balance, set rewardDebt to zero
-            user.rewardDebt = 0;
-        } else {
-            user.rewardDebt = user.amount.mul(pool.accDirtyPerShare).div(1e12); 
+            if (dynamicStakingActive) {
+                    updateVariablePoolReward();
+            }
+
+            if (userAmount == _amount) { //user is retrieving entire balance, set rewardDebt to zero
+                user.rewardDebt = 0;
+            } else {
+                user.rewardDebt = user.amount.mul(pool.accDirtyPerShare).div(1e12); 
+            }
+
         }
+        
                         
     }
 
@@ -609,41 +646,50 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
 
         uint256 price = creatorPrice;
         price = price.mul(conversionRate);
-        IERC20 dirtytoken = IERC20(0x62EcF49636F282313cda51E2e3cbF0E258e65356); //dirty token
 
         require(creatorMinted < creatorMintLimit, "This NFT has reached its mint limit");
         require(dirtytoken.balanceOf(_msgSender()) >= price, "You do not have the required tokens for purchase"); 
         IDirtyNFT(NFTAddress).mint(_msgSender(), _nftid);
 
-        if (creatorExists) { 
-            uint256 creatorShare;
-            uint256 poolShare;
-            creatorShare = price.mul(creatorSplit).div(100);
-            poolShare = price.sub(creatorShare);
+        distributeDirty(_nftid, creatorAddress, creatorPrice, creatorSplit, creatorExists);
 
-            IERC20(dirtytoken).transferFrom(_msgSender(), address(this), price);
+        
+    }
+
+    function distributeDirty(uint256 _nftid, address _creator, uint256 _price, uint256 _creatorSplit, bool _creatorExists) internal {
+        if (_creatorExists) { 
+            uint256 creatorShare;
+            uint256 remainingShare;
+            uint256 burnShare;
+            uint256 poolShare;
+            creatorShare = _price.mul(_creatorSplit).div(100);
+            remainingShare = _price.sub(creatorShare);           
+
+            IERC20(dirtytoken).transferFrom(_msgSender(), address(this), _price);
 
             if (creatorShare > 0) {
-                IERC20(dirtytoken).safeTransfer(address(creatorAddress), creatorShare);
 
-                if (creatorAddress == address(0x000000000000000000000000000000000000dEaD)) {
-                    totalEarnedBurn[_nftid] = totalEarnedBurn[_nftid].add(creatorShare);
-                } else {
-                    totalEarnedCreator[_nftid] = totalEarnedCreator[_nftid].add(creatorShare);
-                }
+                totalEarnedCreator[_nftid] = totalEarnedCreator[_nftid].add(creatorShare);
+                IERC20(dirtytoken).safeTransfer(address(_creator), creatorShare);                
                 
             }
 
-            if (poolShare > 0) {
+            if (remainingShare > 0) {
+                burnShare = remainingShare.mul(50).div(100);
+                poolShare = remainingShare.mul(50).div(100);
+
                 totalEarnedPool[_nftid] = totalEarnedPool[_nftid].add(poolShare);
+                IERC20(dirtytoken).safeTransfer(address(0x000000000000000000000000000000000000dEaD), creatorShare);
+                totalEarnedBurn[_nftid] = totalEarnedBurn[_nftid].add(burnShare);
             }
 
         } else {
-            IERC20(dirtytoken).transferFrom(_msgSender(), address(this), price);
-            totalEarnedPool[_nftid] = totalEarnedPool[_nftid].add(price);
-        }
+            IERC20(dirtytoken).transferFrom(_msgSender(), address(this), _price.mul(50).div(100));
+            totalEarnedPool[_nftid] = totalEarnedPool[_nftid].add(_price.mul(50).div(100));
 
-        
+            IERC20(dirtytoken).transferFrom(_msgSender(), address(0x000000000000000000000000000000000000dEaD), _price.mul(50).div(100));
+            totalEarnedBurn[_nftid] = totalEarnedBurn[_nftid].add(_price.mul(50).div(100));
+        }
     }
 
     // We can give the artists/influencers a DirtyCash balance so they can redeem their own NFTs
@@ -667,6 +713,13 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
     // Get price of NFT in $dirty based on DirtyCash _price
     function getConversionPrice(uint256 _price) external view returns (uint256) {
         uint256 newprice = _price.mul(conversionRate);
+        return newprice;
+    }
+
+    // Get price of NFT in $dirty based on NFT
+    function getConversionNFTPrice(uint256 _nftid) external view returns (uint256) {
+        uint256 nftprice = IDirtyNFT(NFTAddress).getCreatorPrice(_nftid);
+        uint256 newprice = nftprice.mul(conversionRate);
         return newprice;
     }
 
@@ -735,5 +788,102 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
     function setPromoStatus(bool _status) external onlyAuthorized {
         promoActive = _status;
     }
+
+    function setDynamicStakingEnabled(bool _status) external onlyAuthorized {
+        dynamicStakingActive = _status;
+    }
+
+    // Sets the allocation multiplier
+    function setAllocMultiplier(uint256 _newAllocMul) external onlyAuthorized {
+
+        require(_newAllocMul >= 1 && _newAllocMul <= 100, "_allocPoint is outside of range 1-100");
+
+        allocMultiplier = _newAllocMul;
+    }
+
+    // Changes poolReward dynamically based on how many Dirty tokens + LP Tokens are staked to keep rewards consistent
+    function updateVariablePoolReward() private {
+
+        PoolInfo storage pool0 = poolInfo[0];
+        uint256 runningTotal0 = pool0.runningTotal;
+        uint256 lpratio;
+
+        PoolInfo storage pool1 = poolInfo[1];
+        uint256 runningTotal1 = pool1.runningTotal;
+        uint256 stakeratio;
+
+        uint256 multiplier;
+        uint256 ratioMultiplier;
+        uint256 newLPAlloc;
+        uint256 newStakeAlloc;
+
+        if (runningTotal0 >= maxLPStake) {
+            lpratio = SafeMath.div(runningTotal0, maxLPStake, "lpratio >= maxLPStake divison error");
+        } else {
+            lpratio = SafeMath.div(maxLPStake, maxLPStake, "lpratio maxLPStake / maxLPStake division error");
+        }
+
+        if (runningTotal1 >= maxDirtyStake) {
+             stakeratio = SafeMath.div(runningTotal1, maxDirtyStake, "stakeratio >= maxDirtyStake division error"); 
+        } else {
+            stakeratio = SafeMath.div(maxDirtyStake, maxDirtyStake, "stakeratio maxDirtyStake / maxDirtyStake division error");
+        }   
+
+        multiplier = SafeMath.add(lpratio, stakeratio);
+        
+        poolReward = SafeMath.mul(rewardSegment, multiplier);
+
+        if (stakeratio == lpratio) { //ratio of pool rewards should remain the same (65 lp, 35 stake)
+            adjustPools(0, lpalloc, true);
+            adjustPools(1, stakealloc, true);
+        }
+
+        if (stakeratio > lpratio) {
+            ratio = SafeMath.div(stakeratio, lpratio, "stakeratio > lpratio division error");
+            
+             ratioMultiplier = ratio.mul(allocMultiplier);
+
+             if (ratioMultiplier < lpalloc) {
+                newLPAlloc = lpalloc.sub(ratioMultiplier);
+             } else {
+                 newLPAlloc = 5;
+             }
+
+             newStakeAlloc = stakealloc.add(ratioMultiplier);
+
+             if (newStakeAlloc > 95) {
+                 newStakeAlloc = 95;
+             }
+
+             adjustPools(0, newLPAlloc, true);
+             adjustPools(1, newStakeAlloc, true);
+
+        }
+
+        if (lpratio > stakeratio) {
+            ratio = SafeMath.div(lpratio, stakeratio,  "lpratio > stakeratio division error");
+
+            ratioMultiplier = ratio.mul(allocMultiplier);
+
+            if (ratioMultiplier < stakealloc) {
+                newStakeAlloc = stakealloc.sub(ratioMultiplier);
+            } else {
+                 newStakeAlloc = 5;
+            }
+
+             newLPAlloc = lpalloc.add(ratioMultiplier);
+
+            if (newLPAlloc > 95) {
+                 newLPAlloc = 95;
+            }
+
+             adjustPools(0, newLPAlloc, true);
+             adjustPools(1, newStakeAlloc, true);
+        }
+
+
+    }
+
+
     
 }
