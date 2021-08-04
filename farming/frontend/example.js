@@ -1790,12 +1790,12 @@ async function redeemNFT(id) {
 							      })
 							    .on('receipt', function(receipt){
 							   
-							    document.getElementById("dcwithdraw").removeAttribute("disabled");
 							    document.getElementById(""+id+"showLoading").style.display = 'none'; 
 							    document.getElementById(""+id+"redeem").removeAttribute("disabled");
 								document.getElementById(""+id+"purchase").removeAttribute("disabled");
 							    							    
 							    fetchAccountData();
+							    loadgallery(false);
 
 							    })
 
@@ -1849,12 +1849,13 @@ async function redeemNFT(id) {
 												      })
 												    .on('receipt', function(receipt){
 												   
-												    document.getElementById("dcwithdraw").removeAttribute("disabled");
 												    document.getElementById(""+id+"showLoading").style.display = 'none'; 
 												    document.getElementById(""+id+"redeem").removeAttribute("disabled");
 													document.getElementById(""+id+"purchase").removeAttribute("disabled");
 												    							    
 												    fetchAccountData();
+												    loadgallery(false);
+
 
 												    })
 
@@ -1916,6 +1917,100 @@ async function redeemNFT(id) {
 
     });
 
+}
+
+async function purchaseNFT(id) {
+
+	const web3 = new Web3(provider);
+	const accounts = await web3.eth.getAccounts();
+    selectedAccount = accounts[0];
+
+    var tokencontract = new web3.eth.Contract(JSON.parse(dirtytokenABI),tokenAddress);
+    var farmingcontract = new web3.eth.Contract(JSON.parse(farmABI),farmAddress);
+    var nftcontract = new web3.eth.Contract(JSON.parse(DirtyNFTABI),nftAddress);
+
+    nftcontract.methods.getCreatorPrice(id).call(function(err,res){
+		if(!err){
+
+			farmingcontract.methods.getConversionPrice(res).call(function(err,res){
+                if(!err){
+
+                   //console.log(web3.utils.fromWei(res));
+                   var price = web3.utils.fromWei(res);
+					price = +price;
+
+					console.log(price);
+
+                    tokencontract.methods.balanceOf(selectedAccount).call(function(err,res){
+		                if(!err){
+		                   
+		                	//console.log(web3.utils.fromWei(res));
+		                   var balance = web3.utils.fromWei(res);
+		                   balance = +balance;
+		                   balance = parseFloat(balance).toFixed(2);
+
+		                   //document.getElementById("dirtycash-balance").innerText = balance + " " + rewardTOkenSymbol;
+
+		                   if (+balance > +price) { 
+
+		                   		console.log('purchasing NFT');
+
+		                   		web3.eth.sendTransaction(
+						          {from: selectedAccount,
+						          to: farmAddress,
+						          value: 0, 
+						          gasprice: 100000, // 100000 = 10 gwei
+						          // gas: 50000,   // gas limit
+						          data: farmingcontract.methods.purchase(id).encodeABI()
+						              }, function(err, transactionHash) {
+						        	if (err) {
+						         
+							      	} else {
+								        document.getElementById(""+id+"redeem").setAttribute("disabled","disabled");
+								        document.getElementById(""+id+"purchase").setAttribute("disabled","disabled");
+								        document.getElementById(""+id+"showLoading").style.display = 'block';  
+								        withdrawdctx = true;
+							      	}
+							      })
+							    .on('receipt', function(receipt){
+							   
+							    document.getElementById(""+id+"showLoading").style.display = 'none'; 
+							    document.getElementById(""+id+"redeem").removeAttribute("disabled");
+								document.getElementById(""+id+"purchase").removeAttribute("disabled");
+							    							    
+							    fetchAccountData();
+							    loadgallery(false);
+
+							    })
+
+							    .on('error', function(error){ // If a out of gas error, the second parameter is the receipt.
+						   
+							    document.getElementById(""+id+"showLoading").style.display = 'none'; 
+	    
+							    document.getElementById(""+id+"alert").style.display = 'block';
+								document.getElementById(""+id+"alert").classList.add("alert-danger");  
+								document.getElementById(""+id+"alert").classList.remove("alert-info"); 
+							    document.getElementById(""+id+"alert").classList.remove("alert-success"); 
+
+							    if (error.receipt === undefined) {
+						    		document.getElementById(""+id+"alert").innerHTML = error.message;
+							    } else {
+							    	document.getElementById(""+id+"alert").innerHTML = "Transaction failed. Please check <a href='https://ropsten.etherscan.io/tx/"+error.receipt.transactionHash+"' target='_blank'>etherscan</a> for details.";									    	
+							    }
+								}); // sendTransaction
+
+							}
+						}
+
+					});
+
+				}
+
+			});
+
+		}
+
+	});
 }
 
 
@@ -2010,7 +2105,7 @@ async function populateNFTOwnership() {
 
 }
 
-async function populatenft(data, id, tokenuri, creatoraddress, minted, mintlimit, price, isredeemable) {
+async function populatenft(data, id, tokenuri, creatoraddress, minted, mintlimit, price, isredeemable, withImages) {
     //console.log(data);
     if (data !== null) {
     	
@@ -2050,33 +2145,6 @@ async function populatenft(data, id, tokenuri, creatoraddress, minted, mintlimit
 
 								    	var attribstring = "";
 
-								    	var overlay_background = "background-color:rgba(199,21,133,.8);" //mediumvioletred default
-
-								    	if (+data.attributes[2].value == 1) {
-								    		overlay_background = "background-color:rgba(21,87,36,.8);" //green (common)
-								    	} 
-
-								    	if (+data.attributes[2].value == 2) {
-								    		overlay_background = "background-color:rgba(0,64,133,.8);" //blue (uncommon)
-								    	} 
-
-								    	if (+data.attributes[2].value == 3) {
-								    		overlay_background = "background-color:rgba(111,0,133,.8);" //purple (rare)
-								    	} 
-
-								    	if (+data.attributes[2].value == 4) {
-								    		overlay_background = "background-color:rgba(224,248,77,.8);"//yellow (legendary)
-								    	} 
-
-								    	if (+data.attributes[2].value == 5) {
-								    		overlay_background = "background-color:rgba(254,161,0,.8);"//orange (exotic)
-								    	} 
-
-								    	if (+data.attributes[2].value == 6) {
-								    		overlay_background = "background-color:rgba(170,0,0,.8);"//red (god tier)
-								    	} 
-
-
 								    	var tempdata = data.attributes[0].trait_type + ": " + data.attributes[0].value + "<BR>"; //collection
 								    	tempdata +="NFT Name:" + data.name + "<BR>";
 								    	tempdata += data.attributes[1].trait_type + ": " + data.attributes[1].value + "<BR>"; //rarity
@@ -2098,7 +2166,7 @@ async function populatenft(data, id, tokenuri, creatoraddress, minted, mintlimit
 									    } else {
 									    	if (!isredeemable) {
 									    	
-									    	tempdata += "<div class='col-md-12'><button class='btn btn-default disabled'>Not redeemable</button></div>";
+									    	tempdata += "<div class='col-md-12'><button class='btn btn-success disabled'>Not redeemable</button></div>";
 									    	tempdata += "<br><img src='loading.svg' style='display:none' id='"+id+"showLoading' />";
 									    	tempdata += "<div class='col-md-12'><button class='btn btn-default' onclick=purchaseNFT("+id+");>Purchase for "+dirtyprice+" Dirty</button></div>";
 									    	tempdata += "<br>";
@@ -2115,64 +2183,97 @@ async function populatenft(data, id, tokenuri, creatoraddress, minted, mintlimit
 										    }	
 										}
 									    tempdata += "Sharing Totals: <br>"
-									    tempdata += "Total to creator: <span id='"+id+"totalcreator'>"+totalCreator+"</span> Dirty Tokens<BR>";
-									    tempdata += "Total to burn: <span id='"+id+"totalburn'>"+totalBurn+" </span> Dirty Tokens<BR>";
-									    tempdata += "Total to pool: <span id='"+id+"totalpool'>"+totalPool+" </span> Dirty Tokens<BR>";
+									    tempdata += "Total to creator: <span id='"+id+"totalcreator'>"+parseFloat(web3.utils.fromWei(totalCreator)).toFixed(0)+"</span> Dirty Tokens<BR>";
+									    tempdata += "Total to burn: <span id='"+id+"totalburn'>"+parseFloat(web3.utils.fromWei(totalBurn)).toFixed(0)+" </span> Dirty Tokens<BR>";
+									    tempdata += "Total to pool: <span id='"+id+"totalpool'>"+parseFloat(web3.utils.fromWei(totalPool)).toFixed(0)+" </span> Dirty Tokens<BR>";
+									    tempdata += "<br>"
+
+									    if (withImages) {
 
 
+										    var overlay_background = "background-color:rgba(199,21,133,.8);" //mediumvioletred default
 
+									    	if (+data.attributes[2].value == 1) {
+									    		overlay_background = "background-color:rgba(21,87,36,.8);" //green (common)
+									    	} 
 
-									   /* data.attributes.forEach(element => {
+									    	if (+data.attributes[2].value == 2) {
+									    		overlay_background = "background-color:rgba(0,64,133,.8);" //blue (uncommon)
+									    	} 
 
-									    	attribstring += element.trait_type+": "+ element.value + "<BR>"
+									    	if (+data.attributes[2].value == 3) {
+									    		overlay_background = "background-color:rgba(111,0,133,.8);" //purple (rare)
+									    	} 
 
-									    });*/
+									    	if (+data.attributes[2].value == 4) {
+									    		overlay_background = "background-color:rgba(224,248,77,.8);"//yellow (legendary)
+									    	} 
 
-									    var theDiv = document.getElementById("galleryrow");			
+									    	if (+data.attributes[2].value == 5) {
+									    		overlay_background = "background-color:rgba(254,161,0,.8);"//orange (exotic)
+									    	} 
 
-									    if (document.getElementById(""+data.attributes[0].value+"-collection")) {
+									    	if (+data.attributes[2].value == 6) {
+									    		overlay_background = "background-color:rgba(170,0,0,.8);"//red (god tier)
+									    	} 
 
-					                        console.log('collection exists');
+										   /* data.attributes.forEach(element => {
 
-					                        var collectionRow = document.getElementById(""+data.attributes[0].value+"-row");
-					                        
-					                    } else {
-					                       
-					                       console.log('collection is being created');
+										    	attribstring += element.trait_type+": "+ element.value + "<BR>"
 
-					                       var collectionNode = document.createElement('div');
-					                        collectionNode.setAttribute('id', ""+data.attributes[0].value+"-collection");
-					                        //collectionNode.setAttribute('onclick', '$("#'+data.attributes[0].value+'-row").toggle()');
-					                        collectionNode.classList.add("col-md-12");
-					                        collectionNode.classList.add("content-area");
-					                        theDiv.appendChild(collectionNode);
-					                        collectionNode.innerHTML = "<div class='col-md-12' onclick=$('#"+data.attributes[0].value+"-row').slideToggle(750); style='cursor:pointer;background-image:url("+data.thumbnail+");background-repeat:no-repeat;background-attachment: fixed;background-size:cover;background-position:center;padding-left:0px;padding-right:0px;border-color: mediumvioletred;    border-style: solid;background-color: rgba(0,0,0,.8);border-radius: 28px;'><div style='backdrop-filter:grayscale(1)blur(4px);margin-left:0px;"+overlay_background+"' class='collection_overlay content-area' onmouseover=$(this).css('backdrop-filter','grayscale(0)blur(0px)'); onmouseout=$(this).css('backdrop-filter','grayscale(1)blur(4px)'); ><center><h1 class='monoton' style='color:white;margin-top:5%;margin-bottom:5%;'>The "+data.attributes[0].value+" Collection</h1><span><em>click to view</em></center><hr class='hz_div'></div></div>"
-					                        var collectionRow = document.createElement('div');
-					                        collectionRow.setAttribute('id', ""+data.attributes[0].value+"-row");
-					                        collectionRow.classList.add("col-md-12");
-					                        collectionRow.classList.add("row");
-					                        collectionRow.style.display = 'none';
-					                        collectionRow.style.paddingLeft = '0px';
-					                        collectionRow.style.paddingRight = '0px';
-					                        collectionNode.appendChild(collectionRow);
-					                        
-					                    }				    
-									    
-									    var newNode = document.createElement('div');
-									    newNode.setAttribute('id',"div-"+id);
-									    newNode.classList.add("col-md-4");
-									    newNode.classList.add("nft-container");
-									    newNode.style.paddingBottom = ("20px");
-									    newNode.style.paddingTop = ("20px");
-									    /*newNode.style.border = ("white");
-									    newNode.style.borderStyle = ("solid");*/
-									    //theDiv.insertChildAtIndex(newNode, id);
-									    collectionRow.appendChild(newNode);
+										    });*/
 
-									    //console.log(data);
-										newNode.innerHTML =  "<div class='overlay' style='"+overlay_background+";backdrop-filter:blur(4px);border-top-left-radius:25px;border-top-right-radius:25px;z-index:2;'><div class='divtext col-md-12'>"+tempdata+"</div></div><div><img id='"+id+"owned' class='img-fluid' src='https://cash.dirty.finance/farming/images/in_collection.png' style='position:absolute;display:none;width:25%;z-index:1;'> <img id='"+id+"img' style='border:mediumvioletred;border-style:solid' onmouseover=this.style.borderColor='white'; onmouseout=this.style.borderColor='mediumvioletred'; src="+data.thumbnail+" class='img-fluid'><button id="+id+"btn class='btn btn-info' onclick=$(this).text('Loading...');$('#"+id+"btnload').show();$('#"+id+"img').attr('src','"+data.image+"').one('load',function(){$('#"+id+"btn').attr('disabled','disabled');$('#"+id+"btn').text('Done!');$('#"+id+"btnload').hide()});>Load GIF</button><button class='btn btn-success pull-right' onclick=$('#div-"+id+"').children('.overlay').toggleClass('show');>View NFT Info</button><img src='loading.svg' style='display:none' id="+id+"btnload /><div>"
+										    var theDiv = document.getElementById("galleryrow");			
 
+										    if (document.getElementById(""+data.attributes[0].value+"-collection")) {
 
+						                        console.log('collection exists');
+
+						                        var collectionRow = document.getElementById(""+data.attributes[0].value+"-row");
+						                        
+						                    } else {
+						                       
+						                       console.log('collection is being created');
+
+						                       var collectionNode = document.createElement('div');
+						                        collectionNode.setAttribute('id', ""+data.attributes[0].value+"-collection");
+						                        //collectionNode.setAttribute('onclick', '$("#'+data.attributes[0].value+'-row").toggle()');
+						                        collectionNode.classList.add("col-md-12");
+						                        collectionNode.classList.add("content-area");
+						                        collectionNode.style.paddingLeft = '0px';
+						                        collectionNode.style.paddingRight = '0px';
+						                        theDiv.appendChild(collectionNode);
+						                        collectionNode.innerHTML = "<div class='col-md-12' onclick=$('#"+data.attributes[0].value+"-row').slideToggle(750); style='cursor:pointer;background-image:url("+data.thumbnail+");background-repeat:no-repeat;background-attachment: fixed;background-size:cover;background-position:center;margin-left:0px;padding-left:0px;padding-right:0px;border-color: mediumvioletred;    border-style: solid;background-color: rgba(0,0,0,.8);border-radius: 28px;'><div style='backdrop-filter:grayscale(1)blur(4px);margin-left:0px;"+overlay_background+"' class='collection_overlay content-area' onmouseover=$(this).css('backdrop-filter','grayscale(0)blur(0px)'); onmouseout=$(this).css('backdrop-filter','grayscale(1)blur(4px)'); ><center><h1 class='monoton' style='color:white;margin-top:5%;margin-bottom:5%;'>The "+data.attributes[0].value+" Collection</h1><span><em>click to view</em></center><hr class='hz_div'></div></div>"
+						                        var collectionRow = document.createElement('div');
+						                        collectionRow.setAttribute('id', ""+data.attributes[0].value+"-row");
+						                        collectionRow.classList.add("col-md-12");
+						                        collectionRow.classList.add("row");
+						                        collectionRow.style.display = 'none';
+						                        collectionRow.style.marginLeft = '0px';
+						                        collectionRow.style.paddingLeft = '0px';
+						                        collectionRow.style.paddingRight = '0px';
+						                        collectionNode.appendChild(collectionRow);
+						                        
+						                    }				    
+										    
+										    var newNode = document.createElement('div');
+										    newNode.setAttribute('id',"div-"+id);
+										    newNode.classList.add("col-md-4");
+										    newNode.classList.add("nft-container");
+										    newNode.style.paddingBottom = ("20px");
+										    newNode.style.paddingTop = ("20px");
+										    /*newNode.style.border = ("white");
+										    newNode.style.borderStyle = ("solid");*/
+										    //theDiv.insertChildAtIndex(newNode, id);
+										    collectionRow.appendChild(newNode);
+
+										    //console.log(data);
+											newNode.innerHTML =  "<div class='overlay' style='"+overlay_background+";backdrop-filter:blur(4px);border-top-left-radius:25px;border-top-right-radius:25px;z-index:2;'><div id='"+id+"data' class='divtext col-md-12'>"+tempdata+"</div></div><div><img id='"+id+"owned' class='img-fluid' src='https://cash.dirty.finance/farming/images/in_collection.png' style='position:absolute;display:none;width:25%;z-index:1;'> <img id='"+id+"img' style='border:mediumvioletred;border-style:solid' onmouseover=this.style.borderColor='white'; onmouseout=this.style.borderColor='mediumvioletred'; src="+data.thumbnail+" class='img-fluid'><button id="+id+"btn class='btn btn-info' onclick=$(this).text('Loading...');$('#"+id+"btnload').show();$('#"+id+"img').attr('src','"+data.image+"').one('load',function(){$('#"+id+"btn').attr('disabled','disabled');$('#"+id+"btn').text('Done!');$('#"+id+"btnload').hide()});>Animate</button><button class='btn btn-success pull-right' onclick=$('#div-"+id+"').children('.overlay').toggleClass('show');>NFT Info</button><img src='loading.svg' style='display:none' id="+id+"btnload /><div>"
+
+										} else {
+											document.getElementById(""+id+"data").innerHTML = '';
+											document.getElementById(""+id+"data").innerHTML = tempdata;
+										}
 									}
 								});
 
@@ -2192,9 +2293,11 @@ async function populatenft(data, id, tokenuri, creatoraddress, minted, mintlimit
 }
 
    
-function loadgallery() {
+function loadgallery(withImages) {
 
-	document.getElementById("galleryrow").innerHTML = "";
+	if (withImages) {
+		document.getElementById("galleryrow").innerHTML = "";
+	}
 
 	const web3 = new Web3(provider);
 	/*const accounts = await web3.eth.getAccounts();
@@ -2243,7 +2346,7 @@ function loadgallery() {
 
 				                        
 				                        	// console.log("Fetching data...");
-				                        var data = getJSON(result.uri).then(data => populatenft(data, i, result.uri, result.creatorAddress, minted, result.mintLimit, nftprice, result.redeemable));
+				                        var data = getJSON(result.uri).then(data => populatenft(data, i, result.uri, result.creatorAddress, minted, result.mintLimit, nftprice, result.redeemable, withImages));
 					                    
 				                    }
 		                        });
@@ -2269,16 +2372,28 @@ function loadgallery() {
           			var sortlist = $("#galleryrow > div").map(function() {return this.id});
           			var divsortlist = sortlist.get().join(",");
           			console.log(divsortlist);
-          			var rowlist = document.getElementById(""+divsortlist+"").firstChild.nextSibling.id;
-          			console.log(rowlist);
+          			var rowlist;
+
+          			var str_array = divsortlist.split(',');
+
+					for(var i = 0; i < str_array.length; i++) {
+          			console.log(i);
+
+          				if (document.getElementById(""+str_array[i]+"").firstChild.nextSibling) {
+          					rowlist = document.getElementById(""+str_array[i]+"").firstChild.nextSibling.id;
+          					console.log(rowlist);
+          					sortAll(rowlist);
+          				}
+          			
+          			}	
           			/*sortlist.forEach((entry) => {
 					    console.log(entry);
 					    sortAll(entry);
 					});*/
-					sortAll(rowlist);
+					
           			populateNFTOwnership();
 
-          		}, 2000);
+          		}, 3000);
           		
           		
 
@@ -2295,181 +2410,7 @@ function loadgallery() {
 
 }
 
-async function refreshNFT() {
 
-	 //console.log(data);
-    if (data !== null) {
-    	
-    	const web3 = new Web3(provider);
-		const accounts = await web3.eth.getAccounts();
-	    selectedAccount = accounts[0];
-
-		var farmingcontract = new web3.eth.Contract(JSON.parse(farmABI),farmAddress);
-		var nftcontract = new web3.eth.Contract(JSON.parse(DirtyNFTABI),nftAddress);
-
-		var nftprice = web3.utils.toWei(price);
-		//console.log(isredeemable);
-
-		farmingcontract.methods.getConversionPrice(nftprice).call(function(err,res){
-			if (!err) {
-
-				var dirtyprice = web3.utils.fromWei(res).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-				//console.log(dirtyprice);
-
-				farmingcontract.methods.totalEarnedCreator(id).call(function(err,res){
-					if (!err) {
-
-						var totalCreator = res;
-
-						farmingcontract.methods.totalEarnedBurn(id).call(function(err,res){
-							if (!err) {
-
-								var totalBurn = res;
-
-								farmingcontract.methods.totalEarnedPool(id).call(function(err,res){
-									if (!err) {
-
-										var totalPool = res;
-
-										//console.log(data.image)
-
-								    	var attribstring = "";
-
-								    	
-								    	var tempdata = data.attributes[0].trait_type + ": " + data.attributes[0].value + "<BR>"; //collection
-								    	tempdata +="NFT Name: " + data.name + "<BR>";
-								    	tempdata += data.attributes[1].trait_type + ": " + data.attributes[1].value + "<BR>"; //rarity
-								    	tempdata += data.attributes[2].trait_type + ": " + data.attributes[2].value + "<BR>"; //stars
-								    	tempdata += data.attributes[3].trait_type + ": " + data.attributes[3].value + "<BR>"; //variant
-									    tempdata += "<em>'"+data.description+"'</em><br>";
-									    tempdata += "Linkspage: <a style='color:white' href='"+data.linkspage+"' target='_blank'>" + data.linkspage + "</a><BR>";
-									    tempdata += "Contract: "+nftAddress+"<BR>";
-									    tempdata += "<br>"
-									    tempdata += "Total Minted So Far: "+minted+"/"+mintlimit+"<BR>";
-									    
-									    tempdata += "<br>"
-									    tempdata += "<div class='col-md-12 alert alert-info' style='display:none; font-size: x-small;'' id='"+id+"alert'></div>";
-									    
-									    if (!isredeemable) {
-									    	
-									    	tempdata += "<div class='col-md-12'><button class='btn btn-default' onclick=purchaseNFT("+id+");>Purchase for "+dirtyprice+" Dirty</button></div>"
-									    	tempdata += "<br><img src='loading.svg' style='display:none' id='"+id+"showLoading' />"
-									    	tempdata += "<br>"
-
-									    } else {
-
-									    	//tempdata += "Redeem price: $"+price+" DirtyCash<BR>";
-
-									    	tempdata += "<div class='col-md-6'><button id='"+id+"redeem' class='btn btn-success' onclick=redeemNFT("+id+");>Reedeem for $"+price+" DirtyCash</button></div>";
-									    	//tempdata += "Purchase price: "+dirtyprice+" Dirty Tokens<BR>";
-									    	tempdata += "<br><img src='loading.svg' style='display:none' id='"+id+"showLoading' />"
-									    	tempdata += "<div class='col-md-6'><button id='"+id+"purchase' class='btn btn-default' onclick=purchaseNFT("+id+");>Purchase for "+dirtyprice+" Dirty</button></div>"
-									    	tempdata += "<br>"
-									    }	
-
-									    tempdata += "Sharing Totals: <br>"
-									    tempdata += "Total to creator: "+totalCreator+" Dirty Tokens<BR>";
-									    tempdata += "Total to burn: "+totalBurn+" Dirty Tokens<BR>";
-									    tempdata += "Total to pool: "+totalPool+" Dirty Tokens<BR>";
-
-
-
-
-									   
-									}
-								});
-
-							}
-						});
-
-					}
-				});
-
-			}
-
-		});
-		
-
-	} //if (data !== null)
-}
-
-async function refreshGallery() {
-
-	const web3 = new Web3(provider);
-	/*const accounts = await web3.eth.getAccounts();
-    selectedAccount = accounts[0];*/
-
-	var farmingcontract = new web3.eth.Contract(JSON.parse(farmABI),farmAddress);
-	var nftcontract = new web3.eth.Contract(JSON.parse(DirtyNFTABI),nftAddress);
-
-	nftcontract.methods.getCurrentNFTID().call(function(err,res){
-        if(!err){
-
-        	var total = +res;
-        	totalNFTExist = total;
-          
-          	if (+total > 0) {
-
-          		for (let i=1;i<=+total;i++) {
-
-          			nftcontract.methods.creatorInfo(i).call(function(err,res){
-
-          				if (!err) { 
-          					//console.log(res);
-          					if (res.exists) {
-
-          						//console.log(i);
-
-          						var result = res;
-          						var nftprice = web3.utils.fromWei(res.price);
-          						/*console.log(res.creatorAddress); //
-		                        console.log(res.creatorName); //
-		                        console.log(res.exists); //+
-		                        console.log(res.mintLimit); //+
-		                        console.log(res.nftName); //
-		                        console.log(res.price); //+
-		                        console.log(res.redeemable); //+*/
-
-		                        nftcontract.methods.mintedCountbyID(i).call(function(err,res){
-		                        	if (!err) { 
-		                        		var minted = res;
-
-		                        		const getJSON = async url => {
-				                        const response = await fetch(url); 
-
-				                        return response.json(); // get JSON from the response 
-				                        }
-
-				                        
-				                        	// console.log("Fetching data...");
-				                        var data = getJSON(result.uri).then(data => refreshNFT(data, i, result.uri, result.creatorAddress, minted, result.mintLimit, nftprice, result.redeemable));
-					                    
-				                    }
-		                        });
-
-		          				
-	          				}
-		          				
-	          				
-                     	}
-
-          			});
-
-          		} // for
-
-          		          		
-
-          	} else { 
-
-          		//document.getElementById("galleryresult").innerHTML = "<br><center>No NFT's found</center>";
-
-          	} // if (+res > 0)
-                               
-            
-        } // if(!err)
-   });
-
-}
 
 function getTotalNFTExist() {
 
@@ -2592,8 +2533,15 @@ async function onDisconnect() {
 function Refresh(interval) {
 stakinginterval = window.setInterval(function() {
 fetchAccountData();
-getTotalNFTExist()
-console.log('updating')
+getTotalNFTExist();
+console.log('updating account data')
+},interval);
+}
+
+function RefreshNFT(interval) {
+nftinterval = window.setInterval(function() {
+loadgallery(false);
+console.log('updating nft gallery data')
 },interval);
 }
 
