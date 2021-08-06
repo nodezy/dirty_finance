@@ -83,7 +83,7 @@
 
 .overlay {
   position: absolute;
-  bottom: 60px;
+  bottom: 62px;
   left: 0;
   right: 0;
   overflow-x: hidden;
@@ -768,7 +768,7 @@ Welcome Slider
                         <center><img class="loading" src="loading.svg" id="showLoading2" /></center>
                         <center><a style="display:none" id="uniswapdirty" href="https://app.uniswap.org/#/swap?outputCurrency=0x62EcF49636F282313cda51E2e3cbF0E258e65356&use=v2" target="_blank"><button class="btn btn-success">Buy Dirty on Uniswap</button></a></center>
 
-                        <center><button style="display:none" id="dtapprove" class="btn btn-info" onclick="approveDirty();">Approve Dirty</button></center>
+                        <center><button style="display:none" id="dtapprove" class="btn btn-info" onclick="approveDirty(0);">Approve Dirty</button></center>
                         <center><div id="dtdeposit" style="display:none">Enter Deposit Amount:<input type="text" id="dirtyamount" name="dirtyamount" size="13"/><br><br><button id="deposit" class="btn btn-info" onclick="depositDirty();">Deposit Dirty</button>&nbsp;&nbsp;<button style="display:none" id="dtunstake" class="btn btn-danger" onclick="unstakeDirty();">Unstake Dirty</button></div></center>
                         <center><button style="display:none" id="dtunstake1" class="btn btn-danger" onclick="unstakeDirty();">Unstake Dirty</button></center>
                         <center><button style="display:none" id="dtwithdraw" class="btn btn-success" onclick="withdrawDirty();">Withdraw Dirty Tokens</button></center>
@@ -783,7 +783,7 @@ Welcome Slider
 
                     <div class="row" style="padding:10px">
                     <div class="col-md-12 content-area" style="padding:20px">
-                      
+                      <div id="reloadgallery" style="position:absolute; top:50%; left:25%; display:none; z-index:99" class="alert alert-success">New NFT's have been added to the system. <button class="btn btn-info" onclick="loadgallery(true);$('#reloadgallery').hide();">Reload Gallery</button>&nbsp;<button class="btn-danger" onclick="$('#reloadgallery').hide();">X</button></div>
                     <center>
                       <button id="gallerybtn" class="btn btn-info" onclick="loadgallery(true);/*RefreshNFT(30000);*/$(this).attr('disabled','disabled');$('#showLoading4').show();">Load NFT Gallery</button><div class="loading" id="showLoading4"><br><img  src="loading.svg" /></div>
                     </center>
@@ -1067,7 +1067,11 @@ function copyToClipboard(selector, event) {
 
 }
 
+$(document).ready(function() {
 
+ 
+
+});
 
 </script>
 
