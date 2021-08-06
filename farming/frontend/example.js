@@ -20,8 +20,8 @@ let provider;
 let selectedAccount;
 
 // variables used in the file, token name and symbol are just for convinience
-var farmAddress = "0x18714D7689cE96982964e66836de1480feEC95BA"  //"0x2767aBB5054BEFeF7579FF61E4FE8B40A4b85470";
-var farmABI = JSON.stringify([{"inputs":[{"internalType":"contract DirtyCash","name":"_dirty","type":"address"},{"internalType":"uint256","name":"_startBlock","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":true,"internalType":"uint256","name":"pid","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Deposit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":true,"internalType":"uint256","name":"pid","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"EmergencyWithdraw","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":true,"internalType":"uint256","name":"pid","type":"uint256"}],"name":"Unstake","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":true,"internalType":"uint256","name":"pid","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Withdraw","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"WithdrawRewardsOnly","type":"event"},{"inputs":[],"name":"DirtyCashAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"NFTAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_allocPoint","type":"uint256"},{"internalType":"contract IERC20","name":"_lpToken","type":"address"},{"internalType":"bool","name":"_withUpdate","type":"bool"}],"name":"add","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_toAdd","type":"address"}],"name":"addAuthorized","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"addedLpTokens","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"authorized","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"blockRewardLastUpdateTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"blockRewardPercentage","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"blockRewardUpdateCycle","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"blocksPerDay","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"conversionRate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pid","type":"uint256"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"deposit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"dirtycash","outputs":[{"internalType":"contract DirtyCash","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pid","type":"uint256"}],"name":"emergencyWithdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"enableRewardWithdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bool","name":"_status","type":"bool"}],"name":"enableRewardWithdrawals","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getAccruedRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getConversionNFTPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_price","type":"uint256"}],"name":"getConversionPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getConversionRate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getDirtyPerBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getDirtyPerBlockUpdateTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"}],"name":"getHolderRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pid","type":"uint256"}],"name":"getRunningDepositTotal","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getTotalPendingRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getTotalRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pid","type":"uint256"},{"internalType":"address","name":"_user","type":"address"}],"name":"getTotalStake","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"increaseDirtyCashBalance","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"massUpdatePools","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"maxDirtyStake","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"maxLPStake","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"minDirtyStake","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"minLPStake","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"}],"name":"moveRewardsToEscrow","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pid","type":"uint256"},{"internalType":"address","name":"_user","type":"address"}],"name":"pendingRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"poolInfo","outputs":[{"internalType":"contract IERC20","name":"lpToken","type":"address"},{"internalType":"uint256","name":"allocPoint","type":"uint256"},{"internalType":"uint256","name":"lastRewardBlock","type":"uint256"},{"internalType":"uint256","name":"accDirtyPerShare","type":"uint256"},{"internalType":"uint256","name":"runningTotal","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"poolLength","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"poolReward","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"promoActive","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"promoAmount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"purchase","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"redeem","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"reduceDirtyCashBalance","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_toRemove","type":"address"}],"name":"removeAuthorized","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rescueETHFromContract","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rewardSegment","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"rewardWithdrawalStatus","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pid","type":"uint256"},{"internalType":"uint256","name":"_allocPoint","type":"uint256"},{"internalType":"bool","name":"_withUpdate","type":"bool"}],"name":"set","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_blockRewardPercentage","type":"uint256"}],"name":"setBlockRewardPercentage","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_blockRewardUpdateCycle","type":"uint256"}],"name":"setBlockRewardUpdateCycle","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_blocksPerDay","type":"uint256"}],"name":"setBlocksPerDay","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_rate","type":"uint256"}],"name":"setConverstionRate","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"}],"name":"setDirtyCashAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"setDirtyCashBalance","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_min","type":"uint256"},{"internalType":"uint256","name":"_max","type":"uint256"}],"name":"setDirtyStakingMinMax","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_min","type":"uint256"},{"internalType":"uint256","name":"_max","type":"uint256"}],"name":"setLPStakingMinMax","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"}],"name":"setNFTAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bool","name":"_status","type":"bool"}],"name":"setPromoStatus","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_time","type":"uint256"}],"name":"setUnstakeTime","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pid","type":"uint256"},{"internalType":"address","name":"_user","type":"address"}],"name":"timeToUnstake","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalAllocPoint","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"totalEarnedBurn","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"totalEarnedCreator","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"totalEarnedPool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_tokenAddr","type":"address"},{"internalType":"address","name":"_to","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"transferERC20Tokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pid","type":"uint256"}],"name":"unstake","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"unstakeTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"unstakeTimer","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pid","type":"uint256"}],"name":"updatePool","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"updatePoolReward","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"rewardDebt","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"userStaked","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pid","type":"uint256"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawRewardsOnly","outputs":[],"stateMutability":"nonpayable","type":"function"}]);
+var farmAddress = "0xd5612FB04BeCa1Ca47e54D5E47Da9d52FBf3fB48";  //"0x2767aBB5054BEFeF7579FF61E4FE8B40A4b85470";
+var farmABI = JSON.stringify([{"inputs":[{"internalType":"contract DirtyCash","name":"_dirty","type":"address"},{"internalType":"uint256","name":"_startBlock","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":true,"internalType":"uint256","name":"pid","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Deposit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":true,"internalType":"uint256","name":"pid","type":"uint256"}],"name":"Unstake","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":true,"internalType":"uint256","name":"pid","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Withdraw","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"WithdrawRewardsOnly","type":"event"},{"inputs":[],"name":"DirtyCashAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"NFTAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_allocPoint","type":"uint256"},{"internalType":"contract IERC20","name":"_lpToken","type":"address"},{"internalType":"bool","name":"_withUpdate","type":"bool"}],"name":"add","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_toAdd","type":"address"}],"name":"addAuthorized","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"addedLpTokens","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"allocMultiplier","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"authorized","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"blockRewardLastUpdateTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"blockRewardPercentage","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"blockRewardUpdateCycle","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"blocksPerDay","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"conversionRate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pid","type":"uint256"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"deposit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"dirtycash","outputs":[{"internalType":"contract DirtyCash","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"dynamicStakingActive","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"enableRewardWithdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bool","name":"_status","type":"bool"}],"name":"enableRewardWithdrawals","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getAccruedRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getConversionNFTPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_price","type":"uint256"}],"name":"getConversionPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getConversionRate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getDirtyPerBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getDirtyPerBlockUpdateTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"}],"name":"getHolderRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pid","type":"uint256"}],"name":"getRunningDepositTotal","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getTotalPendingRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getTotalRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pid","type":"uint256"},{"internalType":"address","name":"_user","type":"address"}],"name":"getTotalStake","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"increaseDirtyCashBalance","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"lpalloc","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"massUpdatePools","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"maxDirtyStake","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"maxLPStake","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"minDirtyStake","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"minLPStake","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"}],"name":"moveRewardsToEscrow","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pid","type":"uint256"},{"internalType":"address","name":"_user","type":"address"}],"name":"pendingRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"poolInfo","outputs":[{"internalType":"contract IERC20","name":"lpToken","type":"address"},{"internalType":"uint256","name":"allocPoint","type":"uint256"},{"internalType":"uint256","name":"lastRewardBlock","type":"uint256"},{"internalType":"uint256","name":"accDirtyPerShare","type":"uint256"},{"internalType":"uint256","name":"runningTotal","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"poolLength","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"poolReward","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"promoActive","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"promoAmount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"purchase","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"ratio","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"redeem","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"reduceDirtyCashBalance","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_toRemove","type":"address"}],"name":"removeAuthorized","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rescueETHFromContract","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rewardSegment","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"rewardWithdrawalStatus","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pid","type":"uint256"},{"internalType":"uint256","name":"_allocPoint","type":"uint256"},{"internalType":"bool","name":"_withUpdate","type":"bool"}],"name":"set","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_newAllocMul","type":"uint256"}],"name":"setAllocMultiplier","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_lpalloc","type":"uint256"},{"internalType":"uint256","name":"_stakealloc","type":"uint256"}],"name":"setAllocations","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_blockRewardPercentage","type":"uint256"}],"name":"setBlockRewardPercentage","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_blockRewardUpdateCycle","type":"uint256"}],"name":"setBlockRewardUpdateCycle","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_blocksPerDay","type":"uint256"}],"name":"setBlocksPerDay","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_rate","type":"uint256"}],"name":"setConverstionRate","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"}],"name":"setDirtyCashAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"setDirtyCashBalance","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_min","type":"uint256"},{"internalType":"uint256","name":"_max","type":"uint256"}],"name":"setDirtyStakingMinMax","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bool","name":"_status","type":"bool"}],"name":"setDynamicStakingEnabled","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_min","type":"uint256"},{"internalType":"uint256","name":"_max","type":"uint256"}],"name":"setLPStakingMinMax","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"}],"name":"setNFTAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bool","name":"_status","type":"bool"}],"name":"setPromoStatus","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_time","type":"uint256"}],"name":"setUnstakeTime","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"stakealloc","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"startBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pid","type":"uint256"},{"internalType":"address","name":"_user","type":"address"}],"name":"timeToUnstake","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalAllocPoint","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"totalEarnedBurn","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"totalEarnedCreator","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"totalEarnedPool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_tokenAddr","type":"address"},{"internalType":"address","name":"_to","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"transferERC20Tokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pid","type":"uint256"}],"name":"unstake","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"unstakeTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"unstakeTimer","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pid","type":"uint256"}],"name":"updatePool","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"updatePoolReward","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"rewardDebt","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"userStaked","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pid","type":"uint256"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawRewardsOnly","outputs":[],"stateMutability":"nonpayable","type":"function"}]);
 
 
 var tokenAddress = "0x62EcF49636F282313cda51E2e3cbF0E258e65356";
@@ -41,12 +41,12 @@ var uniLPTokenSymbol = "UNI-V2"
 var UniV2ABI = JSON.stringify([{"inputs":[{"internalType":"address","name":"_regenAddress","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"},{"internalType":"address","name":"_spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_spender","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"burnAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"burnTaxAlloc","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"address","name":"_spender","type":"address"},{"internalType":"uint256","name":"_subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_actualAmount","type":"uint256"}],"name":"distribute","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_account","type":"address"}],"name":"excludeFromFees","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_account","type":"address"}],"name":"excludeFromRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"holderTaxAlloc","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_account","type":"address"}],"name":"includeInFees","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_account","type":"address"}],"name":"includeInRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_spender","type":"address"},{"internalType":"uint256","name":"_addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_account","type":"address"}],"name":"isExcludedFromFees","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_account","type":"address"}],"name":"isExcludedFromRewards","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"pure","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"regenAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"regenTaxAlloc","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_actualAmount","type":"uint256"},{"internalType":"bool","name":"_deductTransferFee","type":"bool"}],"name":"rewardsFromToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_burnAddress","type":"address"}],"name":"setBurnAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_regenAddress","type":"address"}],"name":"setRegenAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_holderTaxAlloc","type":"uint256"},{"internalType":"uint256","name":"_regenTaxAlloc","type":"uint256"},{"internalType":"uint256","name":"_burnTaxAlloc","type":"uint256"}],"name":"setTaxAllocations","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_taxPercentage","type":"uint256"}],"name":"setTaxPercentage","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"pure","type":"function"},{"inputs":[],"name":"taxPercentage","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_rewardAmount","type":"uint256"}],"name":"tokenWithRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalBurnFees","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalFees","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalHolderFees","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalRegenFees","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[],"name":"totalTaxAlloc","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_recipient","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_sender","type":"address"},{"internalType":"address","name":"_recipient","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"}]);
 
 
-var nftAddress = "0xfBD793C595E60dE3e607a85a7183A230d3Ab9FA5";
+var nftAddress = "0xa9060dfB2Bb3efd09A67aEfC6b1E78BA0E3159a2";
 var nftName = "DirtyNFT"
 var nftSymbol = "XXXNFT"
-var DirtyNFTABI = JSON.stringify([{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"approved","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"_toAdd","type":"address"}],"name":"addAuthorized","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_toAdd","type":"address"}],"name":"addWhitelisted","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"authorized","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_token","type":"address"},{"internalType":"address","name":"_holder","type":"address"}],"name":"checkBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"creatorInfo","outputs":[{"internalType":"address","name":"creatorAddress","type":"address"},{"internalType":"string","name":"collectionName","type":"string"},{"internalType":"string","name":"nftName","type":"string"},{"internalType":"string","name":"uri","type":"string"},{"internalType":"uint256","name":"price","type":"uint256"},{"internalType":"uint256","name":"creatorSplit","type":"uint256"},{"internalType":"uint256","name":"mintLimit","type":"uint256"},{"internalType":"bool","name":"redeemable","type":"bool"},{"internalType":"bool","name":"exists","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"farmingContract","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"}],"name":"getAllNFTbyAddress","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorExists","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorInfo","outputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"bool","name":"","type":"bool"},{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorMintLimit","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorRedeemable","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorSplit","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getCurrentNFTID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getFarmingContract","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"_uri","type":"string"}],"name":"getIDbyURI","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"id","type":"uint256"}],"name":"mint","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"mintedCountbyID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"tokenURI","type":"string"}],"name":"mintedCountbyURI","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"remintInitial","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_toRemove","type":"address"}],"name":"removeAuthorized","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_toRemove","type":"address"}],"name":"removeWhitelisted","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rescueETHFromContract","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"bytes","name":"_data","type":"bytes"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"bool","name":"approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"address","name":"_address","type":"address"}],"name":"setCreatorAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_creator","type":"address"},{"internalType":"string","name":"_collectionName","type":"string"},{"internalType":"string","name":"_nftName","type":"string"},{"internalType":"string","name":"_URI","type":"string"},{"internalType":"uint256","name":"_price","type":"uint256"},{"internalType":"uint256","name":"_splitPercent","type":"uint256"},{"internalType":"uint256","name":"_mintLimit","type":"uint256"},{"internalType":"bool","name":"_redeemable","type":"bool"},{"internalType":"bool","name":"_mintInitial","type":"bool"}],"name":"setCreatorInfo","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"}],"name":"setFarmingContract","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"uint256","name":"_cost","type":"uint256"}],"name":"setNFTCost","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"uint256","name":"_split","type":"uint256"}],"name":"setNFTSplit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"string","name":"_uri","type":"string"}],"name":"setNFTUri","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"string","name":"_name","type":"string"}],"name":"setNFTcollectionName","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"uint256","name":"_limit","type":"uint256"}],"name":"setNFTmintLimit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"string","name":"_name","type":"string"}],"name":"setNFTname","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"bool","name":"_redeemable","type":"bool"}],"name":"setNFTredeemable","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes4","name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"tokenByIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"uint256","name":"index","type":"uint256"}],"name":"tokenOfOwnerByIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalMinted","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_tokenAddr","type":"address"},{"internalType":"address","name":"_to","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"transferERC20Tokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"whitelisted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}]);
+var DirtyNFTABI = JSON.stringify([{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"approved","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"_toAdd","type":"address"}],"name":"addAuthorized","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_toAdd","type":"address"}],"name":"addWhitelisted","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"authorized","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_token","type":"address"},{"internalType":"address","name":"_holder","type":"address"}],"name":"checkBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"creatorInfo","outputs":[{"internalType":"address","name":"creatorAddress","type":"address"},{"internalType":"string","name":"collectionName","type":"string"},{"internalType":"string","name":"nftName","type":"string"},{"internalType":"string","name":"uri","type":"string"},{"internalType":"uint256","name":"price","type":"uint256"},{"internalType":"uint256","name":"creatorSplit","type":"uint256"},{"internalType":"uint256","name":"mintLimit","type":"uint256"},{"internalType":"bool","name":"redeemable","type":"bool"},{"internalType":"bool","name":"purchasable","type":"bool"},{"internalType":"bool","name":"exists","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"farmingContract","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"}],"name":"getAllNFTbyAddress","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"},{"internalType":"string[]","name":"","type":"string[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorExists","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorInfo","outputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"bool","name":"","type":"bool"},{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorMintLimit","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorPurchasable","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorRedeemable","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorSplit","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getCurrentNFTID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getFarmingContract","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"_uri","type":"string"}],"name":"getIDbyURI","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"id","type":"uint256"}],"name":"mint","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"mintedCountbyID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"tokenURI","type":"string"}],"name":"mintedCountbyURI","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"remintInitial","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_toRemove","type":"address"}],"name":"removeAuthorized","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_toRemove","type":"address"}],"name":"removeWhitelisted","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rescueETHFromContract","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"bytes","name":"_data","type":"bytes"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"bool","name":"approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"address","name":"_address","type":"address"}],"name":"setCreatorAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_creator","type":"address"},{"internalType":"string","name":"_collectionName","type":"string"},{"internalType":"string","name":"_nftName","type":"string"},{"internalType":"string","name":"_URI","type":"string"},{"internalType":"uint256","name":"_price","type":"uint256"},{"internalType":"uint256","name":"_splitPercent","type":"uint256"},{"internalType":"uint256","name":"_mintLimit","type":"uint256"},{"internalType":"bool","name":"_redeemable","type":"bool"},{"internalType":"bool","name":"_purchasable","type":"bool"},{"internalType":"bool","name":"_mintInitial","type":"bool"}],"name":"setCreatorInfo","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"}],"name":"setFarmingContract","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"uint256","name":"_cost","type":"uint256"}],"name":"setNFTCost","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"uint256","name":"_split","type":"uint256"}],"name":"setNFTSplit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"string","name":"_uri","type":"string"}],"name":"setNFTUri","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"string","name":"_name","type":"string"}],"name":"setNFTcollectionName","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"uint256","name":"_limit","type":"uint256"}],"name":"setNFTmintLimit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"string","name":"_name","type":"string"}],"name":"setNFTname","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"bool","name":"_purchasable","type":"bool"}],"name":"setNFTpurchasable","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"bool","name":"_redeemable","type":"bool"}],"name":"setNFTredeemable","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes4","name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"tokenByIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"uint256","name":"index","type":"uint256"}],"name":"tokenOfOwnerByIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalMinted","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_tokenAddr","type":"address"},{"internalType":"address","name":"_to","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"transferERC20Tokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"whitelisted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}]);
 
-let blocknumber;[{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"approved","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"_toAdd","type":"address"}],"name":"addAuthorized","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_toAdd","type":"address"}],"name":"addWhitelisted","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"authorized","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_token","type":"address"},{"internalType":"address","name":"_holder","type":"address"}],"name":"checkBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"creatorInfo","outputs":[{"internalType":"address","name":"creatorAddress","type":"address"},{"internalType":"string","name":"collectionName","type":"string"},{"internalType":"string","name":"nftName","type":"string"},{"internalType":"string","name":"uri","type":"string"},{"internalType":"uint256","name":"price","type":"uint256"},{"internalType":"uint256","name":"creatorSplit","type":"uint256"},{"internalType":"uint256","name":"mintLimit","type":"uint256"},{"internalType":"bool","name":"redeemable","type":"bool"},{"internalType":"bool","name":"exists","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"farmingContract","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"}],"name":"getAllNFTbyAddress","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorExists","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorInfo","outputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"bool","name":"","type":"bool"},{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorMintLimit","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorRedeemable","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorSplit","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"getCreatorURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getCurrentNFTID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getFarmingContract","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"_uri","type":"string"}],"name":"getIDbyURI","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"id","type":"uint256"}],"name":"mint","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"mintedCountbyID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"tokenURI","type":"string"}],"name":"mintedCountbyURI","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"}],"name":"remintInitial","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_toRemove","type":"address"}],"name":"removeAuthorized","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_toRemove","type":"address"}],"name":"removeWhitelisted","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rescueETHFromContract","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"bytes","name":"_data","type":"bytes"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"bool","name":"approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"address","name":"_address","type":"address"}],"name":"setCreatorAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_creator","type":"address"},{"internalType":"string","name":"_collectionName","type":"string"},{"internalType":"string","name":"_nftName","type":"string"},{"internalType":"string","name":"_URI","type":"string"},{"internalType":"uint256","name":"_price","type":"uint256"},{"internalType":"uint256","name":"_splitPercent","type":"uint256"},{"internalType":"uint256","name":"_mintLimit","type":"uint256"},{"internalType":"bool","name":"_redeemable","type":"bool"},{"internalType":"bool","name":"_mintInitial","type":"bool"}],"name":"setCreatorInfo","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"}],"name":"setFarmingContract","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"uint256","name":"_cost","type":"uint256"}],"name":"setNFTCost","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"uint256","name":"_split","type":"uint256"}],"name":"setNFTSplit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"string","name":"_uri","type":"string"}],"name":"setNFTUri","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"string","name":"_name","type":"string"}],"name":"setNFTcollectionName","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"uint256","name":"_limit","type":"uint256"}],"name":"setNFTmintLimit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"string","name":"_name","type":"string"}],"name":"setNFTname","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_nftid","type":"uint256"},{"internalType":"bool","name":"_redeemable","type":"bool"}],"name":"setNFTredeemable","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes4","name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"tokenByIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"uint256","name":"index","type":"uint256"}],"name":"tokenOfOwnerByIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalMinted","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_tokenAddr","type":"address"},{"internalType":"address","name":"_to","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"transferERC20Tokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"whitelisted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}]
+let blocknumber;
 let timestamp;
 
 let approvedirtytx = false;
@@ -198,7 +198,7 @@ async function fetchAccountData() {
            balance = +balance;
            balance = parseFloat(balance).toFixed(2);
             
-            document.getElementById("dirty-balance").innerText = balance + " " + tokenSymbol;
+            document.getElementById("dirty-balance").innerText = balance.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " " + tokenSymbol;
 
             farmingcontract.methods.userInfo('1',selectedAccount).call(function(err,res){
                 if(!err){
@@ -209,7 +209,7 @@ async function fetchAccountData() {
 
                    //console.log(+mytotaldt);
 
-                   document.getElementById("mystakeddirty").innerText = mytotaldt + " " + tokenSymbol;
+                   document.getElementById("mystakeddirty").innerText = mytotaldt.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " " + tokenSymbol;
                    
 
                    if (+balance < 21000000 && mytotaldt == 0) {
@@ -269,7 +269,7 @@ async function fetchAccountData() {
 					                    } else {
 					                    	
 	                
-					                    	document.getElementById("mystakeddirty").innerText = mytotaldt + " " + tokenSymbol;
+					                    	document.getElementById("mystakeddirty").innerText = mytotaldt.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " " + tokenSymbol;
 					                    	document.getElementById("dtunstake").style.display = 'inline';
 
 					                    	if (!unstakedirtytx && !depositdirtytx) {
@@ -293,7 +293,7 @@ async function fetchAccountData() {
 									                    myholderrewards = myholderrewards - +mypercentleftbehind;
 									                    myholderrewards = parseFloat(myholderrewards).toFixed(2);
 
-									                    document.getElementById("poolreward").innerText = myholderrewards + " " + tokenSymbol;
+									                    document.getElementById("poolreward").innerText = myholderrewards.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " " + tokenSymbol;
 
 					                    		}
 					                    	});
@@ -432,7 +432,7 @@ async function fetchAccountData() {
         }
    }); // tokencontract.balanceof
 
-/* LP Staking */
+ /* LP Staking */
 
   lpcontract.methods.balanceOf(selectedAccount).call(function(err,res){
         if(!err){
@@ -441,7 +441,7 @@ async function fetchAccountData() {
            balance = +balance;
            balance = parseFloat(balance).toFixed(2);
             
-            document.getElementById("dirtylp-balance").innerText = balance + " " + uniLPTokenSymbol;
+            document.getElementById("dirtylp-balance").innerText = balance.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " " + uniLPTokenSymbol;
 
             farmingcontract.methods.userInfo('0',selectedAccount).call(function(err,res){
                 if(!err){
@@ -452,7 +452,7 @@ async function fetchAccountData() {
 
                    //console.log(+mytotallp);
 
-                   document.getElementById("mystakedlp").innerText = mytotallp + " " + uniLPTokenSymbol;
+                   document.getElementById("mystakedlp").innerText = mytotallp.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " " + uniLPTokenSymbol;
                    
 
                    if (+balance < 1000 && mytotallp == 0) {
@@ -509,7 +509,7 @@ async function fetchAccountData() {
 					                    } else {
 					                    	
 	                
-					                    	document.getElementById("mystakedlp").innerText = mytotallp + " " + uniLPTokenSymbol;
+					                    	document.getElementById("mystakedlp").innerText = mytotallp.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " " + uniLPTokenSymbol;
 					                    	document.getElementById("lpunstake").style.display = 'inline';
 
 					                    	if (!unstakelptx && !depositlptx) {
@@ -656,7 +656,7 @@ async function fetchAccountData() {
         }
    }); // lpcontract.balanceof
 
-/* General Functions */
+ /* General Functions */
 
   rewardcontract.methods.balanceOf(selectedAccount).call(function(err,res){
                 if(!err){
@@ -665,7 +665,7 @@ async function fetchAccountData() {
                    balance = +balance;
                    balance = parseFloat(balance).toFixed(2);
                     
-                    document.getElementById("dirtycash-balance").innerText = balance + " " + rewardTOkenSymbol;
+                    document.getElementById("dirtycash-balance").innerText = balance.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " " + rewardTOkenSymbol;
                 }
    });
 
@@ -676,7 +676,7 @@ async function fetchAccountData() {
                    totallp = +totallp;
                    totallp = parseFloat(totallp).toFixed(2);
                     
-                    document.getElementById("totalstakedlp").innerText = totallp + " " + uniLPTokenSymbol;
+                    document.getElementById("totalstakedlp").innerText = totallp.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " " + uniLPTokenSymbol;
                 }
    });
 
@@ -688,7 +688,7 @@ async function fetchAccountData() {
                    mytotallp = +mytotallp;
                    mytotallp = parseFloat(mytotallp).toFixed(2);
                     
-                    document.getElementById("mystakedlp").innerText = mytotallp + " " + uniLPTokenSymbol;
+                    document.getElementById("mystakedlp").innerText = mytotallp.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " " + uniLPTokenSymbol;
                 }
    });
 
@@ -708,7 +708,7 @@ async function fetchAccountData() {
 		                   mystdc = +mystdc;
 		                   mystdc = parseFloat(mystdc).toFixed(2);
 		                    
-		                    document.getElementById("pendingstakerewards").innerText = mystdc + " " + rewardTOkenSymbol;
+		                    document.getElementById("pendingstakerewards").innerText = mystdc.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " " + rewardTOkenSymbol;
 
 		                    var totalrewards = mylpdc + mystdc;
 
@@ -731,7 +731,7 @@ async function fetchAccountData() {
                    totalstaked = +totalstaked;
                    totalstaked = parseFloat(totalstaked).toFixed(2);
                     
-                    document.getElementById("totalstakeddirty").innerText = totalstaked + " " + tokenSymbol;
+                    document.getElementById("totalstakeddirty").innerText = totalstaked.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " " + tokenSymbol;
                 }
    });
 
@@ -742,7 +742,7 @@ async function fetchAccountData() {
                    totalaccrued = +totalaccrued;
                    totalaccrued = parseFloat(totalaccrued).toFixed(2);
                     
-                    document.getElementById("dirtycash-unredeemed").innerText = totalaccrued + " " + rewardTOkenSymbol;
+                    document.getElementById("dirtycash-unredeemed").innerText = totalaccrued.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " " + rewardTOkenSymbol;
 
                     if (+totalaccrued > 0) {
 
@@ -803,12 +803,15 @@ async function fetchAccountData() {
   // Display fully loaded UI for wallet data
   document.querySelector("#btn-connect").style.display = "none";
   document.querySelector("#btn-disconnect").style.display = "block";
+
+  // Load NFT Gallery
+   //loadgallery(true);
 }
 
 
 /* Dirty Functions */
 
-async function approveDirty() {
+async function approveDirty(id) {
 
 	const web3 = new Web3(provider);
 	const accounts = await web3.eth.getAccounts();
@@ -835,40 +838,70 @@ async function approveDirty() {
         	if (err) {
          
 	      	} else {
-	      		document.getElementById("dirtyalert").style.display = 'none';
-		        document.getElementById("dtapprove").setAttribute("disabled","disabled");
-		        document.getElementById("showLoading2").style.display = 'block';  
-		        approvedirtytx = true;
+	      		if (_id > 0) {
+
+	      			document.getElementById(""+id+"redeem").setAttribute("disabled","disabled");
+			        document.getElementById(""+id+"purchase").setAttribute("disabled","disabled");
+			        document.getElementById(""+id+"showLoading").style.display = 'block';  
+
+	      		} else {
+	      			document.getElementById("dirtyalert").style.display = 'none';
+			        document.getElementById("dtapprove").setAttribute("disabled","disabled");
+			        document.getElementById("showLoading2").style.display = 'block';  
+			        approvedirtytx = true;
+	      		}
+	      		
 	      	}
 	      })
 	    .on('receipt', function(receipt){
-	   
-	    document.getElementById("showLoading2").style.display = 'none'; 
-	    approvedirtytx = false;
+	   			if (_id > 0) {
+	   				document.getElementById(""+id+"showLoading").style.display = 'none'; 
+				    document.getElementById(""+id+"redeem").removeAttribute("disabled");
+					document.getElementById(""+id+"purchase").removeAttribute("disabled");
+	   			} else {
+	   				document.getElementById("showLoading2").style.display = 'none'; 
+				    approvedirtytx = false;
 
-	    fetchAccountData();
+				    fetchAccountData();
+	   			}
+	    
 
 	    })
 		.on('error', function(error){ // If a out of gas error, the second parameter is the receipt.
+			if (_id > 0) {
+				document.getElementById(""+id+"showLoading").style.display = 'none'; 
+					    
+			    document.getElementById(""+id+"alert").style.display = 'block';
+				document.getElementById(""+id+"alert").classList.add("alert-danger");  
+				document.getElementById(""+id+"alert").classList.remove("alert-info"); 
+			    document.getElementById(""+id+"alert").classList.remove("alert-success"); 
 
-	    document.getElementById("showLoading2").style.display = 'none'; 
+			    if (error.receipt === undefined) {
+		    		document.getElementById(""+id+"alert").innerHTML = error.message;
+			    } else {
+			    	document.getElementById(""+id+"alert").innerHTML = "Transaction failed. Please check <a href='https://ropsten.etherscan.io/tx/"+error.receipt.transactionHash+"' target='_blank'>etherscan</a> for details.";									    	
+			    }
+			} else {
+				document.getElementById("showLoading2").style.display = 'none'; 
 	    
-	    document.getElementById("dirtyalert").style.display = 'block';
-		document.getElementById("dirtyalert").classList.add("alert-danger");  
-		document.getElementById("dirtyalert").classList.remove("alert-info"); 
-	    document.getElementById("dirtyalert").classList.remove("alert-success"); 
+			    document.getElementById("dirtyalert").style.display = 'block';
+				document.getElementById("dirtyalert").classList.add("alert-danger");  
+				document.getElementById("dirtyalert").classList.remove("alert-info"); 
+			    document.getElementById("dirtyalert").classList.remove("alert-success"); 
 
-	    if (error.receipt === undefined) {
-    		document.getElementById("dirtyalert").innerHTML = error.message;
-	    } else {
-	    	document.getElementById("dirtyalert").innerHTML = "Transaction failed. Please check <a href='https://ropsten.etherscan.io/tx/"+error.receipt.transactionHash+"' target='_blank'>etherscan</a> for details.";									    	
-	    }
-		//console.log(JSON.stringify(error));
-		
-	    approvedirtytx = false;
-	    dirtyerror = true;
+			    if (error.receipt === undefined) {
+		    		document.getElementById("dirtyalert").innerHTML = error.message;
+			    } else {
+			    	document.getElementById("dirtyalert").innerHTML = "Transaction failed. Please check <a href='https://ropsten.etherscan.io/tx/"+error.receipt.transactionHash+"' target='_blank'>etherscan</a> for details.";									    	
+			    }
+				//console.log(JSON.stringify(error));
+				
+			    approvedirtytx = false;
+			    dirtyerror = true;
 
-	    fetchAccountData();
+			    fetchAccountData();
+			}
+	    
 
 		});
 
@@ -1782,13 +1815,17 @@ async function redeemNFT(id) {
 						        	if (err) {
 						         
 							      	} else {
+							      		document.getElementById(""+id+"alert").style.display = 'none';
 								        document.getElementById(""+id+"redeem").setAttribute("disabled","disabled");
 								        document.getElementById(""+id+"purchase").setAttribute("disabled","disabled");
 								        document.getElementById(""+id+"showLoading").style.display = 'block';  
-								        withdrawdctx = true;
+								        
 							      	}
 							      })
 							    .on('receipt', function(receipt){
+
+							    	console.log(receipt.logs[0].topics[3]);
+							    	console.log(receipt.logs[0].topics.transactionHash);
 							   
 							    document.getElementById(""+id+"showLoading").style.display = 'none'; 
 							    document.getElementById(""+id+"redeem").removeAttribute("disabled");
@@ -1841,13 +1878,18 @@ async function redeemNFT(id) {
 											        	if (err) {
 											         
 												      	} else {
+												      		document.getElementById(""+id+"alert").style.display = 'none';
 													        document.getElementById(""+id+"redeem").setAttribute("disabled","disabled");
 													        document.getElementById(""+id+"purchase").setAttribute("disabled","disabled");
 													        document.getElementById(""+id+"showLoading").style.display = 'block';  
-													        withdrawdctx = true;
+													        
 												      	}
 												      })
 												    .on('receipt', function(receipt){
+
+												    	
+												    	console.log(parseInt(receipt.logs[0].topics[3]));
+											    		console.log(receipt.transactionHash);
 												   
 												    document.getElementById(""+id+"showLoading").style.display = 'none'; 
 												    document.getElementById(""+id+"redeem").removeAttribute("disabled");
@@ -1953,52 +1995,78 @@ async function purchaseNFT(id) {
 
 		                   if (+balance > +price) { 
 
-		                   		console.log('purchasing NFT');
+		                   		tokencontract.methods.allowance(selectedAccount, farmAddress).call(function(err,res){
+						            	if(!err){
 
-		                   		web3.eth.sendTransaction(
-						          {from: selectedAccount,
-						          to: farmAddress,
-						          value: 0, 
-						          gasprice: 100000, // 100000 = 10 gwei
-						          // gas: 50000,   // gas limit
-						          data: farmingcontract.methods.purchase(id).encodeABI()
-						              }, function(err, transactionHash) {
-						        	if (err) {
-						         
-							      	} else {
-								        document.getElementById(""+id+"redeem").setAttribute("disabled","disabled");
-								        document.getElementById(""+id+"purchase").setAttribute("disabled","disabled");
-								        document.getElementById(""+id+"showLoading").style.display = 'block';  
-								        withdrawdctx = true;
-							      	}
-							      })
-							    .on('receipt', function(receipt){
-							   
-							    document.getElementById(""+id+"showLoading").style.display = 'none'; 
-							    document.getElementById(""+id+"redeem").removeAttribute("disabled");
-								document.getElementById(""+id+"purchase").removeAttribute("disabled");
-							    							    
-							    fetchAccountData();
-							    loadgallery(false);
+						            		var approved = web3.utils.fromWei(res);
+						           			approved = +approved;
+						           			approved = parseFloat(approved).toFixed(2);
 
-							    })
+						           			if (+approved > +price) {
 
-							    .on('error', function(error){ // If a out of gas error, the second parameter is the receipt.
-						   
-							    document.getElementById(""+id+"showLoading").style.display = 'none'; 
-	    
-							    document.getElementById(""+id+"alert").style.display = 'block';
-								document.getElementById(""+id+"alert").classList.add("alert-danger");  
-								document.getElementById(""+id+"alert").classList.remove("alert-info"); 
-							    document.getElementById(""+id+"alert").classList.remove("alert-success"); 
 
-							    if (error.receipt === undefined) {
-						    		document.getElementById(""+id+"alert").innerHTML = error.message;
-							    } else {
-							    	document.getElementById(""+id+"alert").innerHTML = "Transaction failed. Please check <a href='https://ropsten.etherscan.io/tx/"+error.receipt.transactionHash+"' target='_blank'>etherscan</a> for details.";									    	
-							    }
-								}); // sendTransaction
+						                   		console.log('purchasing NFT');
 
+						                   		web3.eth.sendTransaction(
+										          {from: selectedAccount,
+										          to: farmAddress,
+										          value: 0, 
+										          gasprice: 100000, // 100000 = 10 gwei
+										          // gas: 50000,   // gas limit
+										          data: farmingcontract.methods.purchase(id).encodeABI()
+										              }, function(err, transactionHash) {
+										        	if (err) {
+										         
+											      	} else {
+											      		document.getElementById(""+id+"alert").style.display = 'none';
+												        document.getElementById(""+id+"redeem").setAttribute("disabled","disabled");
+												        document.getElementById(""+id+"purchase").setAttribute("disabled","disabled");
+												        document.getElementById(""+id+"showLoading").style.display = 'block';  
+												        
+											      	}
+											      })
+											    .on('receipt', function(receipt){
+
+											    	console.log(receipt.logs[0].topics[3]);
+											    	console.log(receipt.logs[0].topics.transactionHash);
+											   
+											    document.getElementById(""+id+"showLoading").style.display = 'none'; 
+											    document.getElementById(""+id+"redeem").removeAttribute("disabled");
+												document.getElementById(""+id+"purchase").removeAttribute("disabled");
+											    							    
+											    fetchAccountData();
+											    loadgallery(false);
+
+											    })
+
+											    .on('error', function(error){ // If a out of gas error, the second parameter is the receipt.
+										   
+											    document.getElementById(""+id+"showLoading").style.display = 'none'; 
+					    
+											    document.getElementById(""+id+"alert").style.display = 'block';
+												document.getElementById(""+id+"alert").classList.add("alert-danger");  
+												document.getElementById(""+id+"alert").classList.remove("alert-info"); 
+											    document.getElementById(""+id+"alert").classList.remove("alert-success"); 
+
+											    if (error.receipt === undefined) {
+										    		document.getElementById(""+id+"alert").innerHTML = error.message;
+											    } else {
+											    	document.getElementById(""+id+"alert").innerHTML = "Transaction failed. Please check <a href='https://ropsten.etherscan.io/tx/"+error.receipt.transactionHash+"' target='_blank'>etherscan</a> for details.";									    	
+											    }
+												}); // sendTransaction
+
+											} else {
+
+												document.getElementById(""+id+"alert").classList.add("alert-danger");  
+												document.getElementById(""+id+"alert").classList.remove("alert-info"); 
+											    document.getElementById(""+id+"alert").classList.remove("alert-success"); 
+						                   		document.getElementById(""+id+"alert").style.display = 'block';
+						                   		document.getElementById(""+id+"alert").innerHTML = "Please <a href='#' onclick='approveDirty("+id+");return false;'>approve</a> your Dirty tokens to be spent";
+
+											}
+
+										}
+								});
 							}
 						}
 
@@ -2105,7 +2173,7 @@ async function populateNFTOwnership() {
 
 }
 
-async function populatenft(data, id, tokenuri, creatoraddress, minted, mintlimit, price, isredeemable, withImages) {
+async function populatenft(data, id, tokenuri, creatoraddress, minted, mintlimit, price, isredeemable, ispurchasable, withImages) {
     //console.log(data);
     if (data !== null) {
     	
@@ -2152,40 +2220,49 @@ async function populatenft(data, id, tokenuri, creatoraddress, minted, mintlimit
 								    	tempdata += data.attributes[3].trait_type + ": " + data.attributes[3].value + "<BR>"; //variant
 									    tempdata += "<em>'"+data.description+"'</em><br>";
 									    tempdata += "Linkspage: <a style='color:white' href='"+data.linkspage+"' target='_blank'>" + data.linkspage + "</a><BR>";
-									    tempdata += "Contract: "+nftAddress+"<BR>";
+									    tempdata += "Contract: <span style='font-size: x-small;'>"+nftAddress+"</span><BR>";
 									    tempdata += "<br>"
-									    tempdata += "Total Minted So Far: <span id='"+id+"minted'>"+minted+"</span>/<span id='"+id+"mintlimit'>"+mintlimit+"</span><BR>";
+									    tempdata += "Total Minted So Far: <span id='"+id+"minted'>"+minted+"</span>/<span id='"+id+"mintlimit'>"+mintlimit+"</span><BR><br>";
 									    
-									    tempdata += "<br>"
-									    tempdata += "<div class='col-md-12 alert alert-info' style='display:none; font-size: x-small;'' id='"+id+"alert'></div>";
+									   
 									    
 									    if (+minted == +mintlimit) {
 								    		tempdata += "<div class='col-md-12'><button class='btn btn-danger disabled'>Mint Limit Reached</button></div>";
 								    		tempdata += "<br>";
 
 									    } else {
+
+
 									    	if (!isredeemable) {
 									    	
-									    	tempdata += "<div class='col-md-12'><button class='btn btn-success disabled'>Not redeemable</button></div>";
-									    	tempdata += "<br><img src='loading.svg' style='display:none' id='"+id+"showLoading' />";
-									    	tempdata += "<div class='col-md-12'><button class='btn btn-default' onclick=purchaseNFT("+id+");>Purchase for "+dirtyprice+" Dirty</button></div>";
-									    	tempdata += "<br>";
+									    		tempdata += "<div class='col-md-12'><button class='btn btn-success disabled'>Not redeemable</button></div>";							    	
+									    	} else {
+
+									    		tempdata += "<div class='col-md-12'><button id='"+id+"redeem' class='btn btn-success' onclick=redeemNFT("+id+");>Reedeem for $"+price+" DirtyCash</button></div>";
+									    	}
+
+									    	 tempdata += "<img src='loading.svg' style='display:none;margin-top:10px' id='"+id+"showLoading' />";
+
+									    	 tempdata += "<div class='col-md-12 alert alert-info' style='display:none;font-size: x-small;margin-top:10px;margin-bottom:0px;' id='"+id+"alert'></div>";
+
+									    	 tempdata += "<br>";
+
+									    	if (!ispurchasable) {
+
+									    		tempdata += "<div class='col-md-12'><button class='btn btn-default disabled'>Not purchasable</button></div>";	
 
 									    	} else {
 
-									    	//tempdata += "Redeem price: $"+price+" DirtyCash<BR>";
-
-									    	tempdata += "<div class='col-md-6'><button id='"+id+"redeem' class='btn btn-success' onclick=redeemNFT("+id+");>Reedeem for $"+price+" DirtyCash</button></div>";
-									    	//tempdata += "Purchase price: "+dirtyprice+" Dirty Tokens<BR>";
-									    	tempdata += "<br><img src='loading.svg' style='display:none' id='"+id+"showLoading' />"
-									    	tempdata += "<div class='col-md-6'><button id='"+id+"purchase' class='btn btn-default' onclick=purchaseNFT("+id+");>Purchase for "+dirtyprice+" Dirty</button></div>"
-									    	tempdata += "<br>"
+									    		tempdata += "<div class='col-md-12'><button id='"+id+"purchase' class='btn btn-default' onclick=purchaseNFT("+id+");>Purchase for "+dirtyprice+" Dirty</button></div>"
+									    	
 										    }	
+
+										    tempdata += "<br>"
 										}
 									    tempdata += "Sharing Totals: <br>"
-									    tempdata += "Total to creator: <span id='"+id+"totalcreator'>"+parseFloat(web3.utils.fromWei(totalCreator)).toFixed(0)+"</span> Dirty Tokens<BR>";
-									    tempdata += "Total to burn: <span id='"+id+"totalburn'>"+parseFloat(web3.utils.fromWei(totalBurn)).toFixed(0)+" </span> Dirty Tokens<BR>";
-									    tempdata += "Total to pool: <span id='"+id+"totalpool'>"+parseFloat(web3.utils.fromWei(totalPool)).toFixed(0)+" </span> Dirty Tokens<BR>";
+									    tempdata += "Total to creator: <span id='"+id+"totalcreator'>"+parseFloat(web3.utils.fromWei(totalCreator)).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"</span> Dirty Tokens<BR>";
+									    tempdata += "Total to burn: <span id='"+id+"totalburn'>"+parseFloat(web3.utils.fromWei(totalBurn)).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")+" </span> Dirty Tokens<BR>";
+									    tempdata += "Total to pool: <span id='"+id+"totalpool'>"+parseFloat(web3.utils.fromWei(totalPool)).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")+" </span> Dirty Tokens<BR>";
 									    tempdata += "<br>"
 
 									    if (withImages) {
@@ -2216,6 +2293,29 @@ async function populatenft(data, id, tokenuri, creatoraddress, minted, mintlimit
 									    	if (+data.attributes[2].value == 6) {
 									    		overlay_background = "background-color:rgba(170,0,0,.8);"//red (god tier)
 									    	} 
+
+									    	if (data.width === undefined) {
+
+									    		var nftwidth = "100%";
+
+									    		var newoffset = "margin-left:.0rem";
+
+									    	} else {
+
+									    		var nftwidth = data.width;
+
+									    		//console.log(nftwidth);
+
+									    		var offset = nftwidth.replace(/\%/g,'');
+									    		//console.log(offset);
+
+									    		var leftoffset = 100 - +offset;
+									    		leftoffset = leftoffset +2;
+
+									    		//console.log(leftoffset);
+
+									    		var newoffset = "margin-left:."+leftoffset+"rem";
+									    	}
 
 										   /* data.attributes.forEach(element => {
 
@@ -2268,7 +2368,7 @@ async function populatenft(data, id, tokenuri, creatoraddress, minted, mintlimit
 										    collectionRow.appendChild(newNode);
 
 										    //console.log(data);
-											newNode.innerHTML =  "<div class='overlay' style='"+overlay_background+";backdrop-filter:blur(4px);border-top-left-radius:25px;border-top-right-radius:25px;z-index:2;'><div id='"+id+"data' class='divtext col-md-12'>"+tempdata+"</div></div><div><img id='"+id+"owned' class='img-fluid' src='https://cash.dirty.finance/farming/images/in_collection.png' style='position:absolute;display:none;width:25%;z-index:1;'> <img id='"+id+"img' style='border:mediumvioletred;border-style:solid' onmouseover=this.style.borderColor='white'; onmouseout=this.style.borderColor='mediumvioletred'; src="+data.thumbnail+" class='img-fluid'><button id="+id+"btn class='btn btn-info' onclick=$(this).text('Loading...');$('#"+id+"btnload').show();$('#"+id+"img').attr('src','"+data.image+"').one('load',function(){$('#"+id+"btn').attr('disabled','disabled');$('#"+id+"btn').text('Done!');$('#"+id+"btnload').hide()});>Animate</button><button class='btn btn-success pull-right' onclick=$('#div-"+id+"').children('.overlay').toggleClass('show');>NFT Info</button><img src='loading.svg' style='display:none' id="+id+"btnload /><div>"
+											newNode.innerHTML =  "<div class='overlay' style='"+overlay_background+";backdrop-filter:blur(4px);border-top-left-radius:25px;border-top-right-radius:25px;z-index:2;'><div id='"+id+"data' class='divtext col-md-12'>"+tempdata+"</div></div><div style='width:"+nftwidth+";"+newoffset+"'><img id='"+id+"owned' class='img-fluid' src='https://cash.dirty.finance/farming/images/in_collection.png' style='position:absolute;display:none;width:25%;z-index:1;'><video class='img-fluid' id='"+id+"vid' loop muted='muted' style='border:mediumvioletred;border-style:solid;' onmouseover=this.style.borderColor='white'; onmouseout=this.style.borderColor='mediumvioletred';><source src="+data.mp4+" type='video/mp4'>Your browser does not support the video tag.</video><button id='"+id+"play' class='btn btn-info' onclick=$('#"+id+"vid').get(0).play();$(this).hide();$('#"+id+"pause').show();>Animate</button><button style='display:none' id='"+id+"pause' class='btn btn-info' onclick=$('#"+id+"vid').get(0).pause();$(this).hide();$('#"+id+"play').show();>Pause</button><button class='btn btn-success pull-right' onclick=$('#div-"+id+"').children('.overlay').toggleClass('show');>NFT Info</button><img src='loading.svg' style='display:none' id='"+id+"btnload' /><div>"
 
 										} else {
 											document.getElementById(""+id+"data").innerHTML = '';
@@ -2346,7 +2446,7 @@ function loadgallery(withImages) {
 
 				                        
 				                        	// console.log("Fetching data...");
-				                        var data = getJSON(result.uri).then(data => populatenft(data, i, result.uri, result.creatorAddress, minted, result.mintLimit, nftprice, result.redeemable, withImages));
+				                        var data = getJSON(result.uri).then(data => populatenft(data, i, result.uri, result.creatorAddress, minted, result.mintLimit, nftprice, result.redeemable, result.purchasable, withImages));
 					                    
 				                    }
 		                        });
@@ -2427,9 +2527,8 @@ function getTotalNFTExist() {
 
         	if (+res > +totalNFTExist) {
 
-        		document.getElementById("gallerybtn").removeAttribute("disabled");
-        		alert('New NFT has been added to the gallery, click "Load NFT Gallery" to see the latest content');
-
+        		document.getElementById("reloadgallery").style.display = 'block';
+        		
         	}
 
 
