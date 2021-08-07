@@ -259,7 +259,7 @@
 
 
 
-<body id="body">
+<body id="body" >
 
 <div style="display:none" id="myDiv"></div>
 
@@ -783,13 +783,13 @@ Welcome Slider
 
                     <div class="row" style="padding:10px">
                     <div class="col-md-12 content-area" style="padding:20px">
-                      <div id="reloadgallery" style="position:absolute; top:50%; left:25%; display:none; z-index:99" class="alert alert-success">New NFT's have been added to the system. <button class="btn btn-info" onclick="loadgallery(true);$('#reloadgallery').hide();">Reload Gallery</button>&nbsp;<button class="btn-danger" onclick="$('#reloadgallery').hide();">X</button></div>
+                      <div id="reloadgallery" style="position:absolute; top:60%; left:25%; display:none; z-index:99" class="alert alert-success">New NFT's have been added to the system. <button class="btn btn-info" onclick="loadgallery(true);$('#reloadgallery').hide();">Reload Gallery</button>&nbsp;<button class="btn-danger" onclick="$('#reloadgallery').hide();">X</button></div>
                     <center>
-                      <button id="gallerybtn" class="btn btn-info" onclick="loadgallery(true);/*RefreshNFT(30000);*/$(this).attr('disabled','disabled');$('#showLoading4').show();">Load NFT Gallery</button><div class="loading" id="showLoading4"><br><img  src="loading.svg" /></div>
+                      <button id="gallerybtn" class="btn btn-info" onclick="loadgallery(true);RefreshNFT(30000);$(this).attr('disabled','disabled');$(this).hide();$('#showLoading4').show();">Load NFT Gallery</button><div class="loading" id="showLoading4"><br><img  src="loading.svg" /></div>
                     </center>
                     
 
-                    <div class="col-xs-12" id="galleryresult">
+                    <div class="col-xs-12" id="galleryresult" oncontextmenu="return false;">
                       <div class="row" id="galleryrow" style="margin-right:1%; margin-top: 15px">
                       </div>
                     </div>
@@ -925,6 +925,26 @@ Welcome Slider
 
 
 <button onclick="topFunction()" id="myBtn" title="Go to top"><i class="fa fa-angle-double-up"></i></button>
+
+
+<!-- Modal -->
+<div class="modal fade" id="Modal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" style="background-color: rgba(0,0,0,.75)">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ModalLabel1" style="color:white"></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true" style="color:white">&times;</span>
+        </button>
+      </div>
+      <div id="ModalBody1" class="modal-body" style="color:white">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
     <!-- end Footer Area
 
