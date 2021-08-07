@@ -21,6 +21,7 @@ interface IDirtyNFT {
   function getCreatorSplit(uint256 _nftid) external view returns (uint256);
   function getCreatorMintLimit(uint256 _nftid) external view returns (uint256);
   function getCreatorRedeemable(uint256 _nftid) external view returns (bool);
+  function getCreatorPurchasable(uint256 _nftid) external view returns (bool);
   function getCreatorExists(uint256 _nftid) external view returns (bool);
   function mintedCountbyID(uint256 _id) external view returns (uint256);
 }
@@ -126,7 +127,7 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
     event Unstake(address indexed user, uint256 indexed pid);
     event Deposit(address indexed user, uint256 indexed pid, uint256 amount);
     event Withdraw(address indexed user, uint256 indexed pid, uint256 amount);
-    event EmergencyWithdraw(address indexed user, uint256 indexed pid, uint256 amount);
+    //event EmergencyWithdraw(address indexed user, uint256 indexed pid, uint256 amount);
     event WithdrawRewardsOnly(address indexed user, uint256 amount);
 
     constructor(
@@ -437,7 +438,7 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
     }
 
     // Withdraw without caring about rewards. EMERGENCY ONLY.
-    function emergencyWithdraw(uint256 _pid) public nonReentrant {
+    /*function emergencyWithdraw(uint256 _pid) public nonReentrant {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_msgSender()];
 
@@ -449,7 +450,7 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
         emit EmergencyWithdraw(_msgSender(), _pid, _amount);
 
         
-    }
+    }*/
 
     // Safe DIRTYCASH token transfer function, just in case if
     // rounding error causes pool to not have enough DIRTYCASH tokens
@@ -642,16 +643,18 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
         uint256 creatorSplit = IDirtyNFT(NFTAddress).getCreatorSplit(_nftid);
         uint256 creatorMinted = IDirtyNFT(NFTAddress).mintedCountbyID(_nftid);
         uint256 creatorMintLimit = IDirtyNFT(NFTAddress).getCreatorMintLimit(_nftid);
+        bool creatorPurchasable = IDirtyNFT(NFTAddress).getCreatorPurchasable(_nftid);
         bool creatorExists = IDirtyNFT(NFTAddress).getCreatorExists(_nftid);
 
         uint256 price = creatorPrice;
         price = price.mul(conversionRate);
 
+        require(creatorPurchasable, "This NFT is not purchasable with Dirty tokens");
         require(creatorMinted < creatorMintLimit, "This NFT has reached its mint limit");
         require(dirtytoken.balanceOf(_msgSender()) >= price, "You do not have the required tokens for purchase"); 
         IDirtyNFT(NFTAddress).mint(_msgSender(), _nftid);
 
-        distributeDirty(_nftid, creatorAddress, creatorPrice, creatorSplit, creatorExists);
+        distributeDirty(_nftid, creatorAddress, price, creatorSplit, creatorExists);
 
         
     }
@@ -679,7 +682,7 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
                 poolShare = remainingShare.mul(50).div(100);
 
                 totalEarnedPool[_nftid] = totalEarnedPool[_nftid].add(poolShare);
-                IERC20(dirtytoken).safeTransfer(address(0x000000000000000000000000000000000000dEaD), creatorShare);
+                IERC20(dirtytoken).safeTransfer(address(0x000000000000000000000000000000000000dEaD), burnShare);
                 totalEarnedBurn[_nftid] = totalEarnedBurn[_nftid].add(burnShare);
             }
 
@@ -799,6 +802,16 @@ contract DirtyFarm is Ownable, Authorizable, ReentrancyGuard {
         require(_newAllocMul >= 1 && _newAllocMul <= 100, "_allocPoint is outside of range 1-100");
 
         allocMultiplier = _newAllocMul;
+    }
+
+    function setAllocations(uint256 _lpalloc, uint256 _stakealloc) external onlyAuthorized {
+
+        require(_lpalloc >= 1 && _lpalloc <= 100, "lpalloc is outside of range 1-100");
+        require(_stakealloc >= 1 && _stakealloc <= 100, "stakealloc is outside of range 1-100");
+        require(_stakealloc.add(_lpalloc) == 100, "amounts should add up to 100");
+
+        lpalloc = _lpalloc;
+        stakealloc = _stakealloc;
     }
 
     // Changes poolReward dynamically based on how many Dirty tokens + LP Tokens are staked to keep rewards consistent
