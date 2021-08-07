@@ -272,9 +272,9 @@ contract DirtyNFT is Ownable, Authorizable, Whitelisted, ERC721Enumerable, Reent
     }
 
     // Get NFT creator/influence/artist info
-    function getCreatorInfo(uint256 _nftid) external view returns (address,string memory,string memory,string memory,uint256,uint256,uint256,bool,bool) {
+    function getCreatorInfo(uint256 _nftid) external view returns (address,string memory,string memory,string memory,uint256,uint256,uint256,bool,bool,bool) {
         CreatorInfo storage creator = creatorInfo[_nftid];
-        return (creator.creatorAddress,creator.collectionName,creator.nftName,creator.uri,creator.price,creator.creatorSplit,creator.mintLimit,creator.redeemable,creator.exists);
+        return (creator.creatorAddress,creator.collectionName,creator.nftName,creator.uri,creator.price,creator.creatorSplit,creator.mintLimit,creator.redeemable,creator.purchasable,creator.exists);
     }
 
     // Get NFT influencer/artist/creator address
