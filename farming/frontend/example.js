@@ -68,8 +68,11 @@ let lperror = false;
 let dcerror = false;
 
 let stakinginterval;
+let nftinterval;
 let totalNFTExist;
 let approvedctx = false;
+
+let nfttx = false;
 
 /**
  * Setup the orchestra
@@ -762,9 +765,9 @@ async function fetchAccountData() {
 			  					} else {
 
 			  						document.getElementById("dcalert").style.display = 'block';
-									document.getElementById("dcalert").classList.remove("alert-info"); 
+									document.getElementById("dcalert").classList.remove("alert-danger"); 
 						        	document.getElementById("dcalert").classList.remove("alert-success"); 
-						        	document.getElementById("dcalert").classList.add("alert-danger"); 
+						        	document.getElementById("dcalert").classList.add("alert-info"); 
 									document.getElementById("dcalert").innerText = 'DirtyCash withdrawals are not currently enabled';
 									document.getElementById("dcwithdraw").style.display = 'none';
 			  					}
@@ -838,8 +841,9 @@ async function approveDirty(id) {
         	if (err) {
          
 	      	} else {
-	      		if (_id > 0) {
-
+	      		if (id > 0) {
+	      			nfttx = true;
+	      			document.getElementById(""+id+"alert").style.display = 'none';
 	      			document.getElementById(""+id+"redeem").setAttribute("disabled","disabled");
 			        document.getElementById(""+id+"purchase").setAttribute("disabled","disabled");
 			        document.getElementById(""+id+"showLoading").style.display = 'block';  
@@ -854,7 +858,8 @@ async function approveDirty(id) {
 	      	}
 	      })
 	    .on('receipt', function(receipt){
-	   			if (_id > 0) {
+	   			if (id > 0) {
+	   				nfttx = false;
 	   				document.getElementById(""+id+"showLoading").style.display = 'none'; 
 				    document.getElementById(""+id+"redeem").removeAttribute("disabled");
 					document.getElementById(""+id+"purchase").removeAttribute("disabled");
@@ -868,7 +873,8 @@ async function approveDirty(id) {
 
 	    })
 		.on('error', function(error){ // If a out of gas error, the second parameter is the receipt.
-			if (_id > 0) {
+			if (id > 0) {
+				nfttx = false;
 				document.getElementById(""+id+"showLoading").style.display = 'none'; 
 					    
 			    document.getElementById(""+id+"alert").style.display = 'block';
@@ -1815,6 +1821,7 @@ async function redeemNFT(id) {
 						        	if (err) {
 						         
 							      	} else {
+							      		nfttx = true;
 							      		document.getElementById(""+id+"alert").style.display = 'none';
 								        document.getElementById(""+id+"redeem").setAttribute("disabled","disabled");
 								        document.getElementById(""+id+"purchase").setAttribute("disabled","disabled");
@@ -1824,8 +1831,8 @@ async function redeemNFT(id) {
 							      })
 							    .on('receipt', function(receipt){
 
-							    	console.log(receipt.logs[0].topics[3]);
-							    	console.log(receipt.logs[0].topics.transactionHash);
+							    	//console.log(receipt.logs[0].topics[3]);
+							    	//console.log(receipt.transactionHash);
 							   
 							    document.getElementById(""+id+"showLoading").style.display = 'none'; 
 							    document.getElementById(""+id+"redeem").removeAttribute("disabled");
@@ -1834,9 +1841,19 @@ async function redeemNFT(id) {
 							    fetchAccountData();
 							    loadgallery(false);
 
+							    document.getElementById("ModalLabel1").innerHTML = '';
+							    document.getElementById("ModalLabel1").innerText = 'Purchase Complete';
+							    document.getElementById("ModalBody1").innerHTML = '';
+							    document.getElementById("ModalBody1").innerHTML = '<div style="word-break:break-word">Your NFT has been minted at transaction hash <a href="https://ropsten.etherscan.io/tx/'+receipt.transactionHash+'" target="_blank">'+receipt.transactionHash+'</a>.<br><br>You can add your NFT to your mobile wallet (Metamask, Trustwallet) by clicking on "Collectibles" and pasting in the following information:<br><br>Contract: '+nftAddress+'<br><br>TokenID: '+parseInt(receipt.logs[0].topics[3])+'<br><br>Thank you for supporting the Dirty Finance project!</div>';
+							    $('#Modal1').modal('show');
+
+							    nfttx = false;
+
 							    })
 
 							    .on('error', function(error){ // If a out of gas error, the second parameter is the receipt.
+
+							    nfttx = false;
 						   
 							    document.getElementById(""+id+"showLoading").style.display = 'none'; 
 	    
@@ -1878,6 +1895,7 @@ async function redeemNFT(id) {
 											        	if (err) {
 											         
 												      	} else {
+												      		nfttx = true;
 												      		document.getElementById(""+id+"alert").style.display = 'none';
 													        document.getElementById(""+id+"redeem").setAttribute("disabled","disabled");
 													        document.getElementById(""+id+"purchase").setAttribute("disabled","disabled");
@@ -1898,10 +1916,19 @@ async function redeemNFT(id) {
 												    fetchAccountData();
 												    loadgallery(false);
 
+												    document.getElementById("ModalLabel1").innerHTML = '';
+												    document.getElementById("ModalLabel1").innerText = 'Purchase Complete';
+												    document.getElementById("ModalBody1").innerHTML = '';
+												    document.getElementById("ModalBody1").innerHTML = '<div style="word-break:break-word">Your NFT has been minted at transaction hash <a href="https://ropsten.etherscan.io/tx/'+receipt.transactionHash+'" target="_blank">'+receipt.transactionHash+'</a>.<br><br>You can add your NFT to your mobile wallet (Metamask, Trustwallet) by clicking on "Collectibles" and pasting in the following information:<br><br>Contract: '+nftAddress+'<br><br>TokenID: '+parseInt(receipt.logs[0].topics[3])+'<br><br>Thank you for supporting the Dirty Finance project!</div>';
+												    $('#Modal1').modal('show');
+
+												    nfttx = false;
 
 												    })
 
 												    .on('error', function(error){ // If a out of gas error, the second parameter is the receipt.
+
+												    nfttx = false;
 											   
 												    document.getElementById(""+id+"showLoading").style.display = 'none'; 
 						    
@@ -2018,6 +2045,7 @@ async function purchaseNFT(id) {
 										        	if (err) {
 										         
 											      	} else {
+											      		nfttx = true;
 											      		document.getElementById(""+id+"alert").style.display = 'none';
 												        document.getElementById(""+id+"redeem").setAttribute("disabled","disabled");
 												        document.getElementById(""+id+"purchase").setAttribute("disabled","disabled");
@@ -2027,8 +2055,8 @@ async function purchaseNFT(id) {
 											      })
 											    .on('receipt', function(receipt){
 
-											    	console.log(receipt.logs[0].topics[3]);
-											    	console.log(receipt.logs[0].topics.transactionHash);
+											    	//console.log(receipt.logs[0].topics[3]);
+											    	//console.log(receipt.transactionHash);
 											   
 											    document.getElementById(""+id+"showLoading").style.display = 'none'; 
 											    document.getElementById(""+id+"redeem").removeAttribute("disabled");
@@ -2037,9 +2065,19 @@ async function purchaseNFT(id) {
 											    fetchAccountData();
 											    loadgallery(false);
 
+											    document.getElementById("ModalLabel1").innerHTML = '';
+											    document.getElementById("ModalLabel1").innerText = 'Purchase Complete';
+											    document.getElementById("ModalBody1").innerHTML = '';
+											    document.getElementById("ModalBody1").innerHTML = '<div style="word-break:break-word">Your NFT has been minted at transaction hash <a href="https://ropsten.etherscan.io/tx/'+receipt.transactionHash+'" target="_blank">'+receipt.transactionHash+'</a>.<br><br>You can add your NFT to your mobile wallet (Metamask, Trustwallet) by clicking on "Collectibles" and pasting in the following information:<br><br>Contract: '+nftAddress+'<br><br>TokenID: '+parseInt(receipt.logs[0].topics[3])+'<br><br>Thank you for supporting the Dirty Finance project!</div>';
+											    $('#Modal1').modal('show');
+
+											    nfttx = false;
+
 											    })
 
 											    .on('error', function(error){ // If a out of gas error, the second parameter is the receipt.
+
+											    nfttx = false;
 										   
 											    document.getElementById(""+id+"showLoading").style.display = 'none'; 
 					    
@@ -2133,21 +2171,21 @@ async function populateNFTOwnership() {
 
 								var tokenid = res;
 
-								console.log('tokenID # '+tokenid);
+								//console.log('tokenID # '+tokenid);
 
 								nftcontract.methods.tokenURI(tokenid).call(function(err,res){
 									if (!err) {
 
 										var nfturi = res;
 
-										console.log('uri is '+nfturi);
+										//console.log('uri is '+nfturi);
 
 										nftcontract.methods.getIDbyURI(nfturi).call(function(err,res){
 											if (!err) {
 
 												var _id = res;
 
-												console.log('NFT ID is '+_id);
+												//console.log('NFT ID is '+_id);
 
 												document.getElementById(""+_id+"owned").style.display = 'block'; 
 												
@@ -2249,7 +2287,7 @@ async function populatenft(data, id, tokenuri, creatoraddress, minted, mintlimit
 
 									    	if (!ispurchasable) {
 
-									    		tempdata += "<div class='col-md-12'><button class='btn btn-default disabled'>Not purchasable</button></div>";	
+									    		tempdata += "<div class='col-md-12'><button id='"+id+"purchase' class='btn btn-default disabled'>Not purchasable</button></div>";	
 
 									    	} else {
 
@@ -2639,8 +2677,13 @@ console.log('updating account data')
 
 function RefreshNFT(interval) {
 nftinterval = window.setInterval(function() {
-loadgallery(false);
-console.log('updating nft gallery data')
+
+	if (!nfttx) {
+		loadgallery(false);
+		console.log('updating nft gallery data');
+	}
+
+
 },interval);
 }
 
