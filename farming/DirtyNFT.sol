@@ -67,13 +67,14 @@ contract DirtyNFT is Ownable, Authorizable, Whitelisted, ERC721Enumerable, Reent
 
     struct CreatorInfo {
         address creatorAddress; //wallet address of the NFT creator/infuencer
-        string creatorName; // Name of nft creator/influencer/artist
+        string collectionName; // Name of nft creator/influencer/artist
         string nftName; // Name of the actual NFT artwork
         string uri; //address of NFT metadata
         uint256 price; //id of the NFT
         uint256 creatorSplit; //percent to split proceeds with creator/pool;
         uint256 mintLimit; //total amount of this NFT to mint
-        bool redeemable; //can be purchased with DIRTYCASH (true) or only $dirty (false)
+        bool redeemable; //can be purchased with DIRTYCASH 
+        bool purchasable; //can be purchased with Dirty tokens
         bool exists;
     }
 
@@ -144,10 +145,10 @@ contract DirtyNFT is Ownable, Authorizable, Whitelisted, ERC721Enumerable, Reent
     //here is where we populate the NFT infuencer/artist info so they can receive proceeds from purchases with $dirty token
     //and split that with the staking pool based on a split % for each NFT (can be all the same by invoking ALL or can be 
     //different base on each NFT [the _mintInital bool can mint the first NFT for the creator's private collection])
-    function setCreatorInfo(address _creator, string memory _creatorName, string memory _nftName, string memory _URI, uint256 _price, uint256 _splitPercent, uint256 _mintLimit, bool _redeemable, bool _mintInitial) public onlyWhitelisted returns (uint256) {
+    function setCreatorInfo(address _creator, string memory _collectionName, string memory _nftName, string memory _URI, uint256 _price, uint256 _splitPercent, uint256 _mintLimit, bool _redeemable, bool _purchasable, bool _mintInitial) public onlyWhitelisted returns (uint256) {
 
         require(_creator == address(_msgSender()) || authorized[_msgSender()], "Sender is not creator or authorized"); 
-        require(bytes(_creatorName).length > 0, "Creator name string must not be empty");
+        require(bytes(_collectionName).length > 0, "Creator name string must not be empty");
         require(bytes(_nftName).length > 0, "NFT name string must not be empty");
         require(bytes(_URI).length > 0, "URI string must not be empty");
         require(_price > 0, "Price must be greater than zero");
@@ -162,13 +163,14 @@ contract DirtyNFT is Ownable, Authorizable, Whitelisted, ERC721Enumerable, Reent
         CreatorInfo storage creator = creatorInfo[_nftid];
 
             creator.creatorAddress = _creator;
-            creator.creatorName = _creatorName;
+            creator.collectionName = _collectionName;
             creator.nftName = _nftName;
             creator.uri = _URI;
             creator.price = _price;
             creator.creatorSplit = _splitPercent;
             creator.mintLimit = _mintLimit;
             creator.redeemable = _redeemable;
+            creator.purchasable = _purchasable;
             creator.exists = true;
 
             uriExists[_URI] = true;
@@ -216,25 +218,26 @@ contract DirtyNFT is Ownable, Authorizable, Whitelisted, ERC721Enumerable, Reent
 
     }
 
-    // Get all NFT IDs added by a certain address 
-    function getAllNFTIDbyAddress(address _address) public view returns (uint256[] memory) {
+    // Get all NFT IDs added by a certain address (seems to only work if more than one address exist in CreatorInfo)
+    function getAllNFTbyAddress(address _address) public view returns (uint256[] memory, string[] memory) {
         uint256 totalNFT = _NFTIds.current();
         uint256[] memory ids = new uint256[](totalNFT);
+        string[] memory name = new string[](totalNFT);
         uint256 count = 0;
 
         for (uint256 x = 1; x <= totalNFT; ++x) {
 
             CreatorInfo storage creator = creatorInfo[x];
-            count = count.add(1);
 
             if (creator.creatorAddress == address(_address)) {
-                
+                count = count.add(1);
                 ids[count] = x;
+                name[count] = creator.nftName;
             }
 
         }
 
-        return (ids);
+        return (ids,name);
     }
 
     
@@ -247,14 +250,19 @@ contract DirtyNFT is Ownable, Authorizable, Whitelisted, ERC721Enumerable, Reent
 
         if (_address == address(0)) {
 
+            _NFTIds.decrement();
+
+            uriExists[creator.uri] = false;
+
             creator.creatorAddress = _address;
-            creator.creatorName = "";
+            creator.collectionName = "";
             creator.nftName = "";
             creator.uri = "";
             creator.price = 0;
             creator.creatorSplit = 0;
             creator.mintLimit = 0;
             creator.redeemable = false;
+            creator.purchasable = false;
             creator.exists = false;
 
         } else {
@@ -266,7 +274,7 @@ contract DirtyNFT is Ownable, Authorizable, Whitelisted, ERC721Enumerable, Reent
     // Get NFT creator/influence/artist info
     function getCreatorInfo(uint256 _nftid) external view returns (address,string memory,string memory,string memory,uint256,uint256,uint256,bool,bool) {
         CreatorInfo storage creator = creatorInfo[_nftid];
-        return (creator.creatorAddress,creator.creatorName,creator.nftName,creator.uri,creator.price,creator.creatorSplit,creator.mintLimit,creator.redeemable,creator.exists);
+        return (creator.creatorAddress,creator.collectionName,creator.nftName,creator.uri,creator.price,creator.creatorSplit,creator.mintLimit,creator.redeemable,creator.exists);
     }
 
     // Get NFT influencer/artist/creator address
@@ -282,14 +290,14 @@ contract DirtyNFT is Ownable, Authorizable, Whitelisted, ERC721Enumerable, Reent
     }
 
     // Set NFT creator name
-    function setNFTcreatorName(uint256 _nftid, string memory _name) public onlyAuthorized {
+    function setNFTcollectionName(uint256 _nftid, string memory _name) public onlyAuthorized {
 
         CreatorInfo storage creator = creatorInfo[_nftid];
 
         require(creator.creatorAddress == address(_msgSender()) || authorized[_msgSender()], "Sender is not creator or authorized");   
         require(bytes(_name).length > 0, "Creator name string must not be empty");    
 
-        creator.creatorName = _name;
+        creator.collectionName = _name;
     }
 
     // Set NFT name
@@ -312,7 +320,11 @@ contract DirtyNFT is Ownable, Authorizable, Whitelisted, ERC721Enumerable, Reent
         require(bytes(_uri).length > 0, "URI string must not be empty");     
         require(!uriExists[_uri], "An NFT with this URI already exists"); 
 
+        uriExists[creator.uri] = false;
+
         creator.uri = _uri;
+
+        uriExists[_uri] = true;
     }
 
      // Set cost of NFT
@@ -379,6 +391,21 @@ contract DirtyNFT is Ownable, Authorizable, Whitelisted, ERC721Enumerable, Reent
         return creator.redeemable;
     }
 
+    // Set NFT purchasable with Dirty tokens
+    function setNFTpurchasable(uint256 _nftid, bool _purchasable) public onlyAuthorized {
+
+        CreatorInfo storage creator = creatorInfo[_nftid];
+
+        require(creator.creatorAddress == address(_msgSender()) || authorized[_msgSender()], "Sender is not creator or authorized"); 
+
+        creator.redeemable = _purchasable;
+    }
+
+    function getCreatorPurchasable(uint256 _nftid) external view returns (bool) {
+        CreatorInfo storage creator = creatorInfo[_nftid];
+        return creator.purchasable;
+    }
+
     function getCreatorExists(uint256 _nftid) external view returns (bool) {
         CreatorInfo storage creator = creatorInfo[_nftid];
         return creator.exists;
@@ -396,6 +423,22 @@ contract DirtyNFT is Ownable, Authorizable, Whitelisted, ERC721Enumerable, Reent
         IERC20(_tokenAddr).transfer(_to, _amount);
     }
 
+    function getIDbyURI(string memory _uri) public view returns (uint256) {
+        uint256 totalNFT = _NFTIds.current();
+        uint256 nftID = 0;
+
+        for (uint256 x = 1; x <= totalNFT; ++x) {
+
+            CreatorInfo storage creator = creatorInfo[x];
+
+            if (keccak256(bytes(creator.uri)) == keccak256(bytes(_uri))) {   
+                nftID = x;
+            }
+
+        }
+
+        return nftID;
+    }
     
 }
 
